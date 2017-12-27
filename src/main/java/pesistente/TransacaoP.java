@@ -1,4 +1,4 @@
-package entitymanager;
+package pesistente;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -6,14 +6,13 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-
+import javax.transaction.Transactional;
 
 import dominio.Conta;
-import dominio.Transacao;
 
 @Entity
 @Table(name="trasacoes")
-public class TransacaoEntity extends Transacao{
+public class TransacaoP extends dominio.Transacao{
 	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -23,11 +22,7 @@ public class TransacaoEntity extends Transacao{
 		return super.getId();
 	}
 	
-	@Override
-	public Conta getContaPrimaria() {
-		// TODO Auto-generated method stub
-		return super.getContaPrimaria();
-	}
+	
 
 	@Column(name="descricao")
 	@Override
