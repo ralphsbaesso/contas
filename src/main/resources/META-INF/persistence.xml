@@ -8,7 +8,12 @@
 	<persistence-unit name="contas"
 		 transaction-type="RESOURCE_LOCAL">
 		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-		<class>entitymanager.Transacao</class>
+		<class>dominio.Conta</class>
+		<class>dominio.Correntista</class>
+		<class>dominio.Item</class>
+		<class>dominio.Transacao</class>
+		<class>dominio.Subitem</class>
+		<class>dominio.Transferencia</class>
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>
 		<properties>
 			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5InnoDBDialect" />

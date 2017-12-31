@@ -11,11 +11,11 @@
   <div class="py-5">
     <div class="container">
       <div class="row">
-        <div class="col-md-10">
+        <div class="col-md-12">
           <div class="card">
             <div class="card-header"> Header </div>
             <div class="card-body">
-              <table class="table">
+              <table class="table" id="tableTransacao">
                 <thead>
                   <tr>
                     <th>Subitem</th>
@@ -26,75 +26,43 @@
                     <th>Descrição</th>
                     <th>Título</th>
                     <th>Detalhamento</th>
-                    <th>Correntista</th>
                     <th>Conta</th>
                     <th>
-                      <button class="form-control" id='operacao' value='buttonAdicionarLinha'> Adicionar</button>
+                      <button class="form-control" id="operacao" value="buttonAdicionarLinha"> Adicionar</button>
                     </th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
                     <td>
-                      <input class="form-control" type="text"> </td>
+                      <input class="form-control" type="text" name="txtSubitem"> </td>
                     <td>
-                      <input class="form-control" type="text"> </td>
+                      <input class="form-control" type="text" name="txtItem"> </td>
                     <td>
-                      <input class="form-control" type="text"> </td>
+                      <input class="form-control" type="text" name="txtContaPrincipal"> </td>
                     <td>
-                      <input class="form-control" type="text"> </td>
+                      <input class="form-control dataTransacao" type="text" name="txtData"> </td>
                     <td>
-                      <input class="form-control" type="text"> </td>
+                      <input class="form-control" type="text" name="txtValor"> </td>
                     <td>
-                      <input class="form-control" type="text"> </td>
+                      <input class="form-control" type="text" name="txtDescricao"> </td>
                     <td>
-                      <input class="form-control" type="text"> </td>
+                      <input class="form-control" type="text" name="txtTitulo"> </td>
                     <td>
-                      <input class="form-control" type="text"> </td>
+                      <input class="form-control" type="text" name="txtDetalhamento"> </td>
                     <td>
-                      <input class="form-control" type="text"> </td>
+                      <input class="form-control" type="text" name="txtContaSecundaria"> </td>
                     <td>
-                      <input class="form-control" type="text"> </td>
-                    <td>
-                      <button class="form-control"> Remover </button>
+                      <button class="form-control" id="operacao" value="buttonRemoverLinha"> Remover </button>
                     </td>
-                  </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>Mark</td>
-                    <td>Otto</td>
-                    <td>1</td>
-                    <td>Mark</td>
-                    <td>Otto</td>
-                    <td>1</td>
-                    <td>Mark</td>
-                    <td>Otto</td>
-                    <td>Otto</td>
-                  </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>Mark</td>
-                    <td>Otto</td>
-                    <td>1</td>
-                    <td>Mark</td>
-                    <td>Otto</td>
-                    <td>1</td>
-                    <td>Mark</td>
-                    <td>Otto</td>
-                    <td>Otto</td>
                   </tr>
                 </tbody>
               </table>
             </div>
+            <div class="card-footer">
+              <button class="btn btn-outline-success" id="operacao" value="salvar" style="width:20%"> Salvar </button>
+            </div>
           </div>
-        </div>
-        <div class="col-md-2">
-          <ul class="list-group">
-            <li class="list-group-item"><i class="fa fa-home fa-fw"></i>Contas a pagar</li>
-            <li class="list-group-item">Dapibus ac facilisis</li>
-            <li class="list-group-item">Morbi leo risus</li>
-            <li class="list-group-item">Porta ac consectetur</li>
-          </ul>
         </div>
       </div>
     </div>
@@ -106,40 +74,42 @@
       </div>
     </div>
   </div>
-  
   <div style="display:none">
-  	<table id="novaLinha">
-  		<tr>
-                    <td>
-                      <input class="form-control" type="text"> </td>
-                    <td>
-                      <input class="form-control" type="text"> </td>
-                    <td>
-                      <input class="form-control" type="text"> </td>
-                    <td>
-                      <input class="form-control" type="text"> </td>
-                    <td>
-                      <input class="form-control" type="text"> </td>
-                    <td>
-                      <input class="form-control" type="text"> </td>
-                    <td>
-                      <input class="form-control" type="text"> </td>
-                    <td>
-                      <input class="form-control" type="text"> </td>
-                    <td>
-                      <input class="form-control" type="text"> </td>
-                    <td>
-                      <input class="form-control" type="text"> </td>
-                    <td>
-                      <button class="form-control"> Remover </button>
-                    </td>
-                  </tr>
-  	</table>
+    <table id="novaLinha">
+      <tbody>
+        <tr>
+          <td>
+            <input class="form-control" type="text" name="txtSubitem"> </td>
+          <td>
+            <input class="form-control" type="text" name="txtItem"> </td>
+          <td>
+            <input class="form-control" type="text" name="txtContaPrincipal"> </td>
+          <td>
+            <input class="form-control dataTransacao" type="text" name="txtData"> </td>
+          <td>
+            <input class="form-control" type="text" name="txtValor"> </td>
+          <td>
+            <input class="form-control" type="text" name="txtDescricao"> </td>
+          <td>
+            <input class="form-control" type="text" name="txtTitulo"> </td>
+          <td>
+            <input class="form-control" type="text" name="txtDetalhamento"> </td>
+          <td>
+            <input class="form-control" type="text" name="txtContaSecundaria"> </td>
+          <td>
+            <button class="form-control" id="operacao" value="buttonRemoverLinha"> Remover </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
-  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+  <script src="js/cdnjs.cloudflare.comajaxlibsjquery3.2.1jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
-  <script src="js/transacao.js"></script>
+  <script src="js/cdnjs.cloudflare.com-ajax-libs-jquery.mask-1.14.13-jquery.mask.min.js"></script>
+  <script src="js/componentes.js"></script>
+  <script src="js/util.js"></script>
+  <script src="js/ListaTransferencia.js"></script>
 </body>
 
 </html>

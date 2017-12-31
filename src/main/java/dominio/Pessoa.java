@@ -1,5 +1,8 @@
 package dominio;
 
+import javax.persistence.MappedSuperclass;
+
+@MappedSuperclass
 public class Pessoa extends Entidade{
 	
 	private String nome;

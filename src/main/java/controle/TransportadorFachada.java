@@ -1,13 +1,17 @@
 package controle;
 
-import java.util.Map;
-
-import dao.Idao;
+import javax.persistence.EntityManager;
 
 public class TransportadorFachada extends ATransportador {
 
-	public Map<String, Idao> mapaObjetos() {
-		return null;
+	private EntityManager entityManager;
+
+	public EntityManager getEntityManager() {
+		return entityManager;
+	}
+
+	public void setEntityManager(EntityManager entityManager) {
+		this.entityManager = entityManager;
 	}
 
 }

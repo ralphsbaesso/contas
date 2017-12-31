@@ -3,17 +3,34 @@ package dominio;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Item {
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "Itens")
+public class Item extends Entidade{
 	
-	private String nome;
+	private String detalhamento;
 	private String descricao;
 	private List<Subitem> subitens = new ArrayList();
+	private Correntista correntista = new Correntista();
 	
-	public String getNome() {
-		return nome;
+	@ManyToOne
+	@JoinColumn(name = "correntista_id")
+	public Correntista getCorrentista() {
+		return correntista;
 	}
-	public void setNome(String nome) {
-		this.nome = nome;
+	public void setCorrentista(Correntista correntista) {
+		this.correntista = correntista;
+	}
+	public String getDetalhamento() {
+		return detalhamento;
+	}
+	public void setDetalhamento(String detalhamento) {
+		this.detalhamento = detalhamento;
 	}
 	public String getDescricao() {
 		return descricao;
@@ -21,6 +38,8 @@ public class Item {
 	public void setDescricao(String descricao) {
 		this.descricao = descricao;
 	}
+	
+	@OneToMany(mappedBy = "item")
 	public List<Subitem> getSubitens() {
 		return subitens;
 	}

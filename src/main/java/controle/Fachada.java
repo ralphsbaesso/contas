@@ -4,10 +4,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import conexao.ControleConexao;
 import dao.Idao;
 import dominio.Entidade;
+import dominio.ListaTransferencia;
+import dominio.Transacao;
 import negocio.IStrategy;
 import negocio.mapadenegocio.IMapaDeNegocio;
+import negocio.mapadenegocio.MapaTransacao;
+import negocio.mapadenegocio.MapaListaTranferencia;
 
 public class Fachada implements IFachada {
 	
@@ -25,24 +30,32 @@ public class Fachada implements IFachada {
 	public Fachada(){
 		
 		// Carregar mapa de estratégias
-		this.mapaEstrategias.put(null,null);
-		
-		// Carregar mapa de DAO
-		this.mapaDao.put(null,null);
+		this.mapaEstrategias.put(Transacao.class.getName(), new MapaTransacao());
+		this.mapaEstrategias.put(ListaTransferencia.class.getName(), new MapaListaTranferencia());
 	}
 
 	@Override
 	public ITransportador salvar(Entidade entidade) {
 		
+		
 		String nomeEntidade = entidade.getClass().getName();
 		this.transportador = new TransportadorFachada();
-		Idao dao = this.mapaDao.get(nomeEntidade);
 		this.estrategias = this.mapaEstrategias.get(nomeEntidade).estrategiasSalvar();
 		
 		this.transportador.setEntidade(entidade);
-		this.transportador.mapaObjetos().put("dao", dao);
 		
-		this.executarEstrategias(this.transportador);
+		// abre conexao
+		ControleConexao.entityManager.getTransaction().begin();
+		try {
+			
+			this.executarEstrategias(this.transportador);
+		}catch (Exception e) {
+			e.printStackTrace();
+			ControleConexao.entityManager.getTransaction().rollback();
+			// TODO: handle exception
+		}finally {
+			ControleConexao.entityManager.close();
+		}
 		return this.transportador;
 		
 	}
@@ -56,7 +69,7 @@ public class Fachada implements IFachada {
 		this.estrategias = this.mapaEstrategias.get(nomeEntidade).estrategiasAlterar();
 		
 		this.transportador.setEntidade(entidade);
-		this.transportador.mapaObjetos().put("dao", dao);
+//		this.transportador.mapaObjetos().put("dao", dao);
 		
 		this.executarEstrategias(this.transportador);
 		return this.transportador;
@@ -72,7 +85,7 @@ public class Fachada implements IFachada {
 		Idao dao = this.mapaDao.get(nomeEntidade);
 		
 		this.transportador.setEntidade(entidade);
-		this.transportador.mapaObjetos().put("dao", dao);
+//		this.transportador.mapaObjetos().put("dao", dao);
 		
 		this.executarEstrategias(this.transportador);
 		return this.transportador;
@@ -88,7 +101,7 @@ public class Fachada implements IFachada {
 		Idao dao = this.mapaDao.get(nomeEntidade);
 		
 		this.transportador.setEntidade(entidade);
-		this.transportador.mapaObjetos().put("dao", dao);
+//		this.transportador.mapaObjetos().put("dao", dao);
 		
 		this.executarEstrategias(this.transportador);
 		return this.transportador;

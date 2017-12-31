@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import conexao.ControleConexao;
 import controle.Fachada;
 import controle.IFachada;
 import controle.ITransportador;
@@ -19,6 +20,7 @@ import web.command.CommandListar;
 import web.command.CommandSalvar;
 import web.command.ICommand;
 import web.viewhelper.IViewHelper;
+import web.viewhelper.VhListaTransferencia;
 
 
 public class Servlet extends HttpServlet {
@@ -37,8 +39,15 @@ public class Servlet extends HttpServlet {
 		commands.put("listar", new CommandListar());
 		
 		vhs = new HashMap();
+		vhs.put("/contas/ListaTransferencia", new VhListaTransferencia());
 	}
 	
+	@Override
+	public void init() throws ServletException {
+		// TODO Auto-generated method stub
+		super.init();
+		new ControleConexao();
+	}
 
 	public void service(HttpServletRequest request,
 			HttpServletResponse response)
