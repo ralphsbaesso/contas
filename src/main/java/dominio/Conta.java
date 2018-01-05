@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -12,6 +13,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 @Entity
 @Table(name = "contas")
@@ -21,7 +25,7 @@ public class Conta extends Entidade{
 	private Correntista correntista = new Correntista();
 	private List<Transacao> transacoes = new ArrayList();
 	
-	@OneToMany(mappedBy = "conta", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "conta", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
 	public List<Transacao> getTransacoes() {
 		return transacoes;
 	}

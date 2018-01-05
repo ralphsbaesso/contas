@@ -21,12 +21,17 @@
 
 	<servlet-mapping>
 		<servlet-name>Servlet</servlet-name>
-		<url-pattern>/Contas</url-pattern>
+		<url-pattern>/Conta</url-pattern>
 	</servlet-mapping>
 
 	<servlet-mapping>
 		<servlet-name>Servlet</servlet-name>
 		<url-pattern>/ListaTransferencia</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>Servlet</servlet-name>
+		<url-pattern>/Item</url-pattern>
 	</servlet-mapping>
 
 	<error-page>

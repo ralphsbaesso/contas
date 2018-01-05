@@ -9,7 +9,7 @@ import negocio.RegraExcluirEntidade;
 import negocio.RegraListarEntidade;
 import negocio.RegraSalvarEntidade;
 
-public class MapaTransacao extends AbstractMapaNegocio{
+public class MapaItem extends AbstractMapaNegocio{
 
 	@Override
 	public List<IStrategy> estrategiasSalvar() {

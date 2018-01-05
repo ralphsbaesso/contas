@@ -1,17 +1,17 @@
 package controle;
 
-import javax.persistence.EntityManager;
+import dao.Idao;
 
 public class TransportadorFachada extends ATransportador {
 
-	private EntityManager entityManager;
+	private Idao dao;
 
-	public EntityManager getEntityManager() {
-		return entityManager;
+	public Idao getDao() {
+		return dao;
 	}
 
-	public void setEntityManager(EntityManager entityManager) {
-		this.entityManager = entityManager;
+	public void setDao(Idao dao) {
+		this.dao = dao;
 	}
 
 }

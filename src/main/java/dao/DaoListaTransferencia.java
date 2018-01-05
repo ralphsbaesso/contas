@@ -7,7 +7,7 @@ import javax.persistence.EntityTransaction;
 import conexao.ControleConexao;
 import dominio.Entidade;
 
-public class DaoTransferencia implements Idao{
+public class DaoListaTransferencia implements Idao{
 
 	@Override
 	public boolean salvar(Entidade entidade) {

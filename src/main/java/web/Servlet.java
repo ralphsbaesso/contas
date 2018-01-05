@@ -20,6 +20,8 @@ import web.command.CommandListar;
 import web.command.CommandSalvar;
 import web.command.ICommand;
 import web.viewhelper.IViewHelper;
+import web.viewhelper.VhConta;
+import web.viewhelper.VhItem;
 import web.viewhelper.VhListaTransferencia;
 
 
@@ -40,6 +42,8 @@ public class Servlet extends HttpServlet {
 		
 		vhs = new HashMap();
 		vhs.put("/contas/ListaTransferencia", new VhListaTransferencia());
+		vhs.put("/contas/Conta", new VhConta());
+		vhs.put("/contas/Item", new VhItem());
 	}
 	
 	@Override

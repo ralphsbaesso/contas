@@ -2,38 +2,7 @@ $(document).ready(
 		
 		function() {
 
-			// OPERAÇÃO
-			$("body").on('click', '#operacao', function() {
-
-				var operacao = $(this).val().toLowerCase();
-
-				if (operacao == 'salvar') {
-					salvar();
-				} else if (operacao == 'alterar') {
-					alterar();
-				} else if (operacao == 'excluir') {
-					excluir();
-				} else if (operacao == 'listar') {
-					listar();
-				} else if (operacao == 'limparcampos') {
-
-					limparCampos();
-				} else if (operacao == 'buttonadicionarlinha') {
-
-					var novaLinha = $('#novaLinha tr').clone();
-					novaLinha.hide();
-					$('#tableTransacao tbody ').append(novaLinha);
-					novaLinha.slideDown(0.5);
-
-				} else if (operacao == 'buttonremoverlinha') {
-
-					var linha = $(this).parent().parent();
-					linha.slideUp('fast', function() {
-						linha.remove();
-					});
-				}
-			});
-
+			
 			function salvar() {
 				
 				var transferencias = new Array();

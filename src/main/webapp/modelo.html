@@ -35,11 +35,17 @@
                 <tbody>
                   <tr>
                     <td>
-                      <input class="form-control" type="text" name="txtSubitem"> </td>
+                      <select class="form-control" id="selectSubitem" name="txtSubitemId">
+							<option value=""></option>
+						</select> </td>
                     <td>
-                      <input class="form-control" type="text" name="txtItem"> </td>
+                     	<select class="form-control" id="selectItem" name="txtItemId">
+							<option value=""></option>
+						</select> </td>
                     <td>
-                      <input class="form-control" type="text" name="txtContaPrincipal"> </td>
+						<select class="form-control" id="selectConta" name="txtContaPrincipalId">
+							<option value=""></option>
+						</select> </td>
                     <td>
                       <input class="form-control dataTransacao" type="text" name="txtData"> </td>
                     <td>
@@ -110,6 +116,9 @@
   <script src="js/componentes.js"></script>
   <script src="js/util.js"></script>
   <script src="js/ListaTransferencia.js"></script>
+  <script src="js/Conta.js"></script>
+  <script src="js/Item.js"></script>
+  <script src="js/modelo.js"></script>
 </body>
 
 </html>
