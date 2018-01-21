@@ -25,7 +25,7 @@ public class Conta extends Entidade{
 	private Correntista correntista = new Correntista();
 	private List<Transacao> transacoes = new ArrayList();
 	
-	@OneToMany(mappedBy = "conta", cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "conta", cascade = CascadeType.ALL)
 	public List<Transacao> getTransacoes() {
 		return transacoes;
 	}

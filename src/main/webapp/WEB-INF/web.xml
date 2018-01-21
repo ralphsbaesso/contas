@@ -34,6 +34,16 @@
 		<url-pattern>/Item</url-pattern>
 	</servlet-mapping>
 
+	<servlet-mapping>
+		<servlet-name>Servlet</servlet-name>
+		<url-pattern>/Subitem</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>Servlet</servlet-name>
+		<url-pattern>/Transferencia</url-pattern>
+	</servlet-mapping>
+
 	<error-page>
 		<exception-type>java.lang.NullPointerException</exception-type>
 		<location>/funcionalidade_em_implementacao.jsp</location>

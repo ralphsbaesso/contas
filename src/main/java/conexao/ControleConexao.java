@@ -8,7 +8,7 @@ import javax.persistence.Persistence;
 public class ControleConexao {
 	
 	public ControleConexao() {
-		this.entityManagerFactory = Persistence.createEntityManagerFactory("contas");
+		this.entityManagerFactory = Persistence.createEntityManagerFactory("contas_pu");
 	}
 	
 	private static EntityManagerFactory entityManagerFactory;

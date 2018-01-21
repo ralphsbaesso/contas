@@ -10,12 +10,11 @@ import negocio.RegraListarEntidade;
 import negocio.RegraSalvarEntidade;
 import negocio.VerificarCorrentistaDeItem;
 
-public class MapaItem extends AbstractMapaNegocio{
+public class MapaSubitem extends AbstractMapaNegocio{
 
 	@Override
 	public List<IStrategy> estrategiasSalvar() {
 		this.estrategias = new ArrayList();
-		this.estrategias.add(new VerificarCorrentistaDeItem());
 		this.estrategias.add(new RegraSalvarEntidade());
 		
 		return this.estrategias;

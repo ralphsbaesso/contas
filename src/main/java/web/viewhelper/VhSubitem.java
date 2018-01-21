@@ -3,6 +3,7 @@ package web.viewhelper;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Calendar;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -12,35 +13,38 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import adaptergson.EmptyStringToDouble;
-import adaptergson.EmptyStringToInteger;
-import adaptergson.FactoryGson;
 import adaptergson.StringToCalendar;
 import controle.ITransportador;
 import dominio.Entidade;
-import dominio.ListaTransferencia;
-import dominio.Transacao;
-import dominio.Transferencia;
+import dominio.Subitem;
 import enuns.EOperacao;
 import web.TransportadorWeb;
 
-public class VhListaTransferencia extends AbstractVH {
+public class VhSubitem extends AbstractVH {
 	
-	private ListaTransferencia listaTransferencia;
+	private Subitem subitem;
 
 	@Override
 	public Entidade getEntidade(HttpServletRequest request) {
 
-		Gson gson = FactoryGson.getGson();
+		Gson gson = new GsonBuilder()
+				.registerTypeAdapter(Calendar.class, new StringToCalendar())
+				.registerTypeAdapter(double.class, new EmptyStringToDouble())
+				.registerTypeAdapter(Double.class, new EmptyStringToDouble())
+				.create();
 		
-		this.listaTransferencia = new ListaTransferencia();
+		this.subitem = new Subitem();
 		
-		String jsonListaTransferencia = request.getParameter("listaTransferencia");
+		String jsonSubitem = request.getParameter("subitem");
 		
-		try {
-			this.listaTransferencia = gson.fromJson(jsonListaTransferencia, ListaTransferencia.class);			
-		}catch (Exception e) {
-			this.listaTransferencia = null;
-			e.printStackTrace();
+		if(jsonSubitem != null) {
+			
+			try {
+				this.subitem = gson.fromJson(jsonSubitem, Subitem.class);			
+			}catch (Exception e) {
+				this.subitem = null;
+				e.printStackTrace();
+			}
 		}
 
 		operacao = request.getParameter("operacao").toLowerCase();
@@ -54,7 +58,7 @@ public class VhListaTransferencia extends AbstractVH {
 			
 		}
 
-		return this.listaTransferencia;
+		return this.subitem;
 
 	}
 
@@ -68,22 +72,6 @@ public class VhListaTransferencia extends AbstractVH {
 		transpotadorWeb.recebeObjetoMensagem(transportador);
 
 		if (operacao.equals("salvar")) {
-			
-			ListaTransferencia lista = (ListaTransferencia) transportador.getEntidade();
-			
-			for(Transferencia transferencia : lista.getTransferencias()) {
-				transferencia.getTransacaoPrincipal().setTransferencia(null);
-				transferencia.getTransacaoPrincipal().setConta(null);
-				transferencia.getTransacaoPrincipal().setSubitem(null);
-				
-				Transacao ts = transferencia.getTransacaoSecundaria();
-				if(ts != null) {
-					
-					ts.setTransferencia(null);
-					ts.setConta(null);
-					ts.setSubitem(null);
-				}
-			}
 
 			out.print(transpotadorWeb.enviarObjetoWeb());
 			return;
@@ -100,9 +88,11 @@ public class VhListaTransferencia extends AbstractVH {
 			
 		} else if (operacao.equals("listar")) {
 			
-//			for (Transferencia transferencia : transportador.getEntidade()) {
-//				
-//			}
+			List<Subitem> itens = (List) transpotadorWeb.getEntidades();
+			
+			for(Subitem subitem : itens) {
+				subitem.getItem().setCorrentista(null);
+			}
 
 			out.print(transpotadorWeb.enviarObjetoWeb());
 			return;

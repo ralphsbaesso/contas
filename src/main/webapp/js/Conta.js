@@ -103,8 +103,7 @@ class Conta{
 					},
 					async: false,
 					beforeSend : function() {
-						$("#sucesso").html(
-								"<p align='center'>Carregando...</p>");
+						// carregando ...
 					}
 				}).done(function(msg) {
 

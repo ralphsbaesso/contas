@@ -1,4 +1,4 @@
-package dao;
+package dao.implementacao;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +8,7 @@ import javax.persistence.Query;
 import org.hibernate.Hibernate;
 
 import conexao.ControleConexao;
+import dao.Idao;
 import dominio.Conta;
 import dominio.Entidade;
 
@@ -70,7 +71,7 @@ public class DaoConta implements Idao {
 		List<Conta> contas = new ArrayList();
 		
 		if(conta.getId() > 0) {
-			conta = ControleConexao.entityManager.find(Conta.class, conta);
+			conta = ControleConexao.entityManager.find(Conta.class, conta.getId());
 			contas.add(conta);
 			
 		}else {

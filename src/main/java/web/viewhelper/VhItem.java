@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import adaptergson.EmptyStringToNumber;
+import adaptergson.EmptyStringToDouble;
 import adaptergson.StringToCalendar;
 import controle.ITransportador;
 import dominio.Correntista;
@@ -31,8 +31,8 @@ public class VhItem extends AbstractVH {
 
 		Gson gson = new GsonBuilder()
 				.registerTypeAdapter(Calendar.class, new StringToCalendar())
-				.registerTypeAdapter(double.class, new EmptyStringToNumber())
-				.registerTypeAdapter(Double.class, new EmptyStringToNumber())
+				.registerTypeAdapter(double.class, new EmptyStringToDouble())
+				.registerTypeAdapter(Double.class, new EmptyStringToDouble())
 				.create();
 		
 		this.item = new Item();

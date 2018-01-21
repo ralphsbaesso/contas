@@ -7,19 +7,26 @@ import java.util.Map;
 import javax.persistence.EntityTransaction;
 
 import conexao.ControleConexao;
-import dao.DaoConta;
-import dao.DaoItem;
-import dao.DaoListaTransferencia;
 import dao.Idao;
+import dao.implementacao.DaoConta;
+import dao.implementacao.DaoItem;
+import dao.implementacao.DaoListaTransferencia;
+import dao.implementacao.DaoSubitem;
+import dao.implementacao.DaoTransferencia;
 import dominio.Conta;
 import dominio.Entidade;
 import dominio.Item;
 import dominio.ListaTransferencia;
+import dominio.Subitem;
+import dominio.Transferencia;
+import enuns.ESemafaro;
 import negocio.IStrategy;
 import negocio.mapadenegocio.IMapaDeNegocio;
 import negocio.mapadenegocio.MapaConta;
 import negocio.mapadenegocio.MapaItem;
 import negocio.mapadenegocio.MapaListaTranferencia;
+import negocio.mapadenegocio.MapaSubitem;
+import negocio.mapadenegocio.MapaTransferencia;
 
 public class Fachada implements IFachada {
 
@@ -39,11 +46,15 @@ public class Fachada implements IFachada {
 		this.mapaEstrategias.put(Conta.class.getName(), new MapaConta());
 		this.mapaEstrategias.put(ListaTransferencia.class.getName(), new MapaListaTranferencia());
 		this.mapaEstrategias.put(Item.class.getName(), new MapaItem());
+		this.mapaEstrategias.put(Subitem.class.getName(), new MapaSubitem());
+		this.mapaEstrategias.put(Transferencia.class.getName(), new MapaTransferencia());
 
 		// Carregar mapa de DAO
 		this.mapaDao.put(Conta.class.getName(), new DaoConta());
 		this.mapaDao.put(ListaTransferencia.class.getName(), new DaoListaTransferencia());
 		this.mapaDao.put(Item.class.getName(), new DaoItem());
+		this.mapaDao.put(Subitem.class.getName(), new DaoSubitem());
+		this.mapaDao.put(Transferencia.class.getName(), new DaoTransferencia());
 	}
 
 	@Override
@@ -129,6 +140,8 @@ public class Fachada implements IFachada {
 		} catch (Exception e) {
 			e.printStackTrace();
 			transaction.rollback();
+			transportador.setMensagens("Erro desconhecido");
+			transportador.setSemafaro(ESemafaro.VERMELHO);
 			
 		} finally {
 			ControleConexao.finishTransaction();

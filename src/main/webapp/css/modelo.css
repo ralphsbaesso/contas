@@ -1,0 +1,12 @@
+td > input{
+	width:120px !important
+}
+
+td > select{
+	width:120px !important
+}
+
+td > textarea{
+	width:120px !important;
+	height:38px
+}

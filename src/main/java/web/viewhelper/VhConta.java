@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.util.Calendar;
 import java.util.List;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -12,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import adaptergson.EmptyStringToNumber;
+import adaptergson.EmptyStringToDouble;
 import adaptergson.StringToCalendar;
 import controle.ITransportador;
 import dominio.Conta;
@@ -29,8 +30,8 @@ public class VhConta extends AbstractVH {
 
 		Gson gson = new GsonBuilder()
 				.registerTypeAdapter(Calendar.class, new StringToCalendar())
-				.registerTypeAdapter(double.class, new EmptyStringToNumber())
-				.registerTypeAdapter(Double.class, new EmptyStringToNumber())
+				.registerTypeAdapter(double.class, new EmptyStringToDouble())
+				.registerTypeAdapter(Double.class, new EmptyStringToDouble())
 				.create();
 		
 		this.conta = new Conta();
@@ -45,6 +46,17 @@ public class VhConta extends AbstractVH {
 				this.conta = null;
 				e.printStackTrace();
 			}
+		}else {
+			
+			int id;
+			try {
+				id = Integer.valueOf(request.getParameter("txtContaId"));
+			}catch(NumberFormatException e) {
+				e.printStackTrace();
+				id = 0;
+			}
+			
+			conta.setId(id);
 		}
 
 		operacao = request.getParameter("operacao").toLowerCase();
@@ -65,26 +77,18 @@ public class VhConta extends AbstractVH {
 	@Override
 	public void setView(ITransportador transportador, HttpServletRequest request, HttpServletResponse response)
 			throws IOException, ServletException {
-
+		
 		PrintWriter out = response.getWriter();
 		TransportadorWeb transpotadorWeb = new TransportadorWeb();
+		Gson json = new Gson();
 
 		transpotadorWeb.recebeObjetoMensagem(transportador);
 
 		if (operacao.equals("salvar")) {
 
-			out.print(transpotadorWeb.enviarObjetoWeb());
-			return;
-
 		} else if (operacao.equals("excluir")) {
-
-			out.print(transpotadorWeb.enviarObjetoWeb());
-			return;
 			
 		} else if (operacao.equals("alterar")) {
-
-			out.print(transpotadorWeb.enviarObjetoWeb());
-			return;
 			
 		} else if (operacao.equals("listar")) {
 			
@@ -93,15 +97,22 @@ public class VhConta extends AbstractVH {
 			for(Conta conta : contas) {
 				conta.getCorrentista().setContas(null);
 				conta.getCorrentista().setItens(null);
+				conta.setTransacoes(null);
 			}
 			
+		}
+		
+		String destino = request.getParameter("destino");
+		
+		if(destino != null) {
 			
-
-			out.print(transpotadorWeb.enviarObjetoWeb());
+			request.setAttribute("contas",json.toJson(transportador.getEntidades()));
+			RequestDispatcher rd = request.getRequestDispatcher(destino);
+			rd.forward(request, response);
 			return;
 		}
+		
+		out.print(transpotadorWeb.enviarObjetoWeb());
 
-		out.println("operacao: " + operacao);
-		// rd.forward(request, response);
 	}
 }

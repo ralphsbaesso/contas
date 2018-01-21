@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css">
+  <link rel="stylesheet" href="https://v40.pingendo.com/assets/bootstrap/bootstrap-4.0.0-beta.1.css" type="text/css"> </head>
+
+<body>
+  <div class="py-5">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header"> Menu</div>
+            <div class="card-body">
+              <h4>Transações</h4>
+              <h6 class="text-muted">Subtitle</h6>
+              	<form action="Conta" method="post">
+                	<label class=""><strong>Selecione a conta</strong></label>
+                	<select class="btn btn-info selectContaPrimaria" id="" name="txtContaId">
+                  </select> 
+                  <button class="btn btn-outline-primary" id="operacao" name="operacao" value="listar" value="segundo">Novas Transações</button>
+                  <input type="hidden" name="destino" value="menu-conta.jsp">
+                </form>
+                
+                <form action="Transferencia" method="post">
+                	<label class=""><strong>Selecione a conta</strong></label>
+                	<select class="btn btn-info selectContaPrimaria" id="selectContaPrimaria" name="txtContaId">
+                  </select> 
+                  <button class="btn btn-outline-primary" id="operacao" name="operacao" value="listar">Listar Transações</button>
+                  <input type="hidden" name="destino" value="menu-conta.jsp">
+                </form>
+                  
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="js/cdnjs.cloudflare.comajaxlibsjquery3.2.1jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+  <script src="js/cdnjs.cloudflare.com-ajax-libs-jquery.mask-1.14.13-jquery.mask.min.js"></script>
+  <script src="js/componentes.js"></script>
+  <script src="js/util.js"></script>
+  <script src="js/ListaTransferencia.js"></script>
+  <script src="js/Transferencia.js"></script>
+  <script src="js/Conta.js"></script>
+  <script src="js/Item.js"></script>
+  <script src="js/Subitem.js"></script>
+  <script src="js/menu-principal.js"></script>
+</body>
+
+</html>

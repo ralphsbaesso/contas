@@ -1,19 +1,19 @@
 var retorno;
 
-class ListaTransferencia{
+class Subitem{
 
-	salvar(listaTransferencia) {
+	salvar(subitem) {
 		
-		var json = JSON.stringify(listaTransferencia);
+		var json = JSON.stringify(subitem);
 		
 		$.ajax(
 				{
-					url : "ListaTransferencia",
+					url : "Subitem",
 					type : 'post',
 					dataType : 'json',
 					data : {
 						operacao : "salvar",
-						listaTransferencia : json
+						subitem : json
 
 					},
 					async: false,
@@ -31,18 +31,18 @@ class ListaTransferencia{
 		return retorno;
 	}
 	
-	alterar(listaTransferencia) {
+	alterar(subitem) {
 		
-		var json = JSON.stringify(listaTransferencia);
+		var json = JSON.stringify(subitem);
 
 		$.ajax(
 				{
-					url : "ListaTransferencia",
+					url : "Subitem",
 					type : 'post',
 					dataType : 'json',
 					data : {
 						operacao : "alterar",
-						listaTransferencia : json
+						subitem : json
 
 					},
 					async: false,
@@ -61,16 +61,16 @@ class ListaTransferencia{
 		return retorno;
 	}
 
-	excluir(listaTransferencia) {		
+	excluir(subitem) {		
 
 		$.ajax(
 				{
-					url : "ListaTransferencia",
+					url : "Subitem",
 					type : 'post',
 					dataType : 'json',
 					data : {
 						operacao : "excluir",
-						listaTransferencia : json
+						subitem : json
 
 					},
 					async: false,
@@ -88,22 +88,22 @@ class ListaTransferencia{
 		return retorno;
 	}
 			
-	listar(listaTransferencia) {		
+	listar(subitem) {		
 		
-		var json = JSON.stringify(listaTransferencia);
+		var json = JSON.stringify(subitem);
 		
 		$.ajax(
 				{
-					url : "ListaTransferencia",
+					url : "Subitem",
 					type : 'post',
 					dataType : 'json',
 					data : {
 						operacao : "listar",
-						listaTransferencia : json
+						subitem : json
 					},
 					async: false,
 					beforeSend : function() {
-						// carregando ...
+						// carregendo ...
 					}
 				}).done(function(msg) {
 

@@ -1,19 +1,19 @@
 var retorno;
 
-class ListaTransferencia{
+class Transferencia{
 
-	salvar(listaTransferencia) {
+	salvar(transferencia) {
 		
-		var json = JSON.stringify(listaTransferencia);
+		var json = JSON.stringify(transferencia);
 		
 		$.ajax(
 				{
-					url : "ListaTransferencia",
+					url : "Transferencia",
 					type : 'post',
 					dataType : 'json',
 					data : {
 						operacao : "salvar",
-						listaTransferencia : json
+						transferencia : json
 
 					},
 					async: false,
@@ -31,18 +31,18 @@ class ListaTransferencia{
 		return retorno;
 	}
 	
-	alterar(listaTransferencia) {
+	alterar(transferencia) {
 		
-		var json = JSON.stringify(listaTransferencia);
+		var json = JSON.stringify(transferencia);
 
 		$.ajax(
 				{
-					url : "ListaTransferencia",
+					url : "Transferencia",
 					type : 'post',
 					dataType : 'json',
 					data : {
 						operacao : "alterar",
-						listaTransferencia : json
+						transferencia : json
 
 					},
 					async: false,
@@ -61,16 +61,16 @@ class ListaTransferencia{
 		return retorno;
 	}
 
-	excluir(listaTransferencia) {		
+	excluir(transferencia) {		
 
 		$.ajax(
 				{
-					url : "ListaTransferencia",
+					url : "Transferencia",
 					type : 'post',
 					dataType : 'json',
 					data : {
 						operacao : "excluir",
-						listaTransferencia : json
+						transferencia : json
 
 					},
 					async: false,
@@ -88,18 +88,18 @@ class ListaTransferencia{
 		return retorno;
 	}
 			
-	listar(listaTransferencia) {		
+	listar(transferencia) {		
 		
-		var json = JSON.stringify(listaTransferencia);
+		var json = JSON.stringify(transferencia);
 		
 		$.ajax(
 				{
-					url : "ListaTransferencia",
+					url : "Transferencia",
 					type : 'post',
 					dataType : 'json',
 					data : {
 						operacao : "listar",
-						listaTransferencia : json
+						transferencia : json
 					},
 					async: false,
 					beforeSend : function() {

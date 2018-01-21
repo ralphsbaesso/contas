@@ -1,4 +1,4 @@
-package dao;
+package dao.implementacao;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,18 +6,19 @@ import java.util.List;
 import javax.persistence.Query;
 
 import conexao.ControleConexao;
+import dao.Idao;
 import dominio.Entidade;
-import dominio.Item;
+import dominio.Subitem;
 
-public class DaoItem implements Idao {
+public class DaoSubitem implements Idao{
 
 	@Override
 	public boolean salvar(Entidade entidade) {
 
-		Item item = (Item) entidade;
+		Subitem subitem = (Subitem) entidade;
 
 		try {
-			ControleConexao.entityManager.persist(item);
+			ControleConexao.entityManager.persist(subitem);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
@@ -29,10 +30,10 @@ public class DaoItem implements Idao {
 	@Override
 	public boolean alterar(Entidade entidade) {
 
-		Item item = (Item) entidade;
+		Subitem subitem = (Subitem) entidade;
 
 		try {
-			ControleConexao.entityManager.merge(item);
+			ControleConexao.entityManager.merge(subitem);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
@@ -44,15 +45,15 @@ public class DaoItem implements Idao {
 	@Override
 	public boolean excluir(Entidade entidade) {
 
-		Item item = (Item) entidade;
+		Subitem subitem = (Subitem) entidade;
 
 		try {
-			item = ControleConexao.entityManager.find(Item.class, item.getId());
+			subitem = ControleConexao.entityManager.find(Subitem.class, subitem.getId());
 
-			if (item == null) {
+			if (subitem == null) {
 				return false;
 			}
-			ControleConexao.entityManager.remove(item);
+			ControleConexao.entityManager.remove(subitem);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
@@ -64,16 +65,16 @@ public class DaoItem implements Idao {
 	@Override
 	public List listar(Entidade entidade) {
 
-		Item item = (Item) entidade;
-		List<Item> itens = new ArrayList();
+		Subitem subitem = (Subitem) entidade;
+		List<Subitem> itens = new ArrayList();
 
-		if (item.getId() > 0) {
-			item = ControleConexao.entityManager.find(Item.class, item);
-			itens.add(item);
+		if (subitem.getId() > 0) {
+			subitem = ControleConexao.entityManager.find(Subitem.class, subitem);
+			itens.add(subitem);
 
 		} else {
 
-			Query query = ControleConexao.entityManager.createQuery("FROM Item");
+			Query query = ControleConexao.entityManager.createQuery("FROM Subitem");
 			itens = query.getResultList();
 		}
 
