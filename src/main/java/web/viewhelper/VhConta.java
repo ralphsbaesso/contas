@@ -46,17 +46,6 @@ public class VhConta extends AbstractVH {
 				this.conta = null;
 				e.printStackTrace();
 			}
-		}else {
-			
-			int id;
-			try {
-				id = Integer.valueOf(request.getParameter("txtContaId"));
-			}catch(NumberFormatException e) {
-				e.printStackTrace();
-				id = 0;
-			}
-			
-			conta.setId(id);
 		}
 
 		operacao = request.getParameter("operacao").toLowerCase();

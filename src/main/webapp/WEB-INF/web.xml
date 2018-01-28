@@ -44,6 +44,11 @@
 		<url-pattern>/Transferencia</url-pattern>
 	</servlet-mapping>
 
+	<servlet-mapping>
+		<servlet-name>Servlet</servlet-name>
+		<url-pattern>/Transacao</url-pattern>
+	</servlet-mapping>
+
 	<error-page>
 		<exception-type>java.lang.NullPointerException</exception-type>
 		<location>/funcionalidade_em_implementacao.jsp</location>

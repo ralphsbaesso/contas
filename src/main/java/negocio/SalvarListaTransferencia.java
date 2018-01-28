@@ -26,19 +26,26 @@ public class SalvarListaTransferencia implements IStrategy {
 		for (int i = 0; i < listaTransferencia.getTransferencias().size(); i++) {
 
 			Transferencia transferencia = listaTransferencia.getTransferencias().get(i);
+			
+			ControleConexao.entityManager.persist(transferencia);
 
-			Transacao tp = transferencia.getTransacaoPrincipal();
-			Transacao ts = transferencia.getTransacaoSecundaria();
+			Transacao tp = transferencia.getTransacoes().get(0);
+			Transacao ts = null;
+			
+			if(transferencia.getTransacoes().size() > 1 && transferencia.getTransacoes().get(1) != null) {
+				
+				ts = transferencia.getTransacoes().get(1);
+			}
 
 			try {
-
-				transferencia.setTransacaoPrincipal(ControleConexao.entityManager.merge(tp));
+				tp.setTransferencia(transferencia);
+				transferencia.getTransacoes().set(0, ControleConexao.entityManager.merge(tp));
 				
 				if(ts != null) {
-					transferencia.setTransacaoSecundaria(ControleConexao.entityManager.merge(ts));
+					ts.setTransferencia(transferencia);
+					transferencia.getTransacoes().set(1, ControleConexao.entityManager.merge(ts));
+					
 				}
-
-				ControleConexao.entityManager.persist(transferencia);
 
 			} catch (Exception e) {
 

@@ -1,39 +1,18 @@
 package negocio;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-
 import controle.ITransportador;
 import dominio.ListaTransferencia;
 import dominio.Transacao;
-import dominio.Transferencia;
 import enuns.ESemafaro;
 
-public class VerificarCamposTransacoes implements IStrategy {
+public class VerificarTransacoesJaPersistidas implements IStrategy {
 
 	@Override
 	public boolean processar(ITransportador transportador) {
 		
 		if(transportador.getEntidade() instanceof ListaTransferencia) {
 			
-			ListaTransferencia listaTransferencia =  (ListaTransferencia) transportador.getEntidade();
-			
-			List<Calendar> datas = new ArrayList();
-			Calendar maiorData = Calendar.getInstance();
-			Calendar menorData = Calendar.getInstance();
-			
-			//maiorData.set
-			
-			for(Transferencia transferencia : listaTransferencia.getTransferencias()){
-				
-				datas.add(transferencia.getTransacoes().get(0).getDataTransacao());
-			}
-			
-			for(Calendar d : datas) {
-				
-				
-			}
+			ListaTransferencia listaTransferencia =  (ListaTransferencia) transportador.getEntidade();	
 			
 			for (int i = 0; i < listaTransferencia.getTransferencias().size(); i++) {
 				

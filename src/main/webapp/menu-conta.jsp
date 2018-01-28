@@ -9,18 +9,21 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css">
   <link rel="stylesheet" href="https://v40.pingendo.com/assets/bootstrap/bootstrap-4.0.0-beta.1.css" type="text/css"> 
   <link rel="stylesheet" href="css/modelo.css" type="text/css">
+  <link rel="stylesheet" href="js/jQuery/jquery.datetimepicker.css">
   </head>
 <title>Contas</title>
 
 <%
 	String contas = (String)request.getAttribute("contas");
 	String transferencias = (String)request.getAttribute("transferencias");
+	String transacoes = (String)request.getAttribute("transacoes");
 %>
 	
 <script type="text/javascript">
 	
 	localStorage.setItem("contas", JSON.stringify(<%=contas %>));
 	localStorage.setItem("transferencias", JSON.stringify(<%=transferencias %>));
+	localStorage.setItem("transacoes", JSON.stringify(<%=transacoes %>));
 </script>
 <%
 	
@@ -66,7 +69,7 @@
             <div class="card-body" style="overflow:auto">
               <table class="table" id="tableTransacao">
                 <thead>
-                  <tr>
+                  <tr id="linha">>
                     <th>Data</th>
                     <th>Valor</th>
                     <th>Descrição</th>
@@ -116,6 +119,7 @@
             	<button class="btn btn-outline-success" id="operacao" value="buttonAdicionarItem" style="width:20%"> Adicionar novo item</button>
             	<button class="btn btn-outline-success" id="operacao" value="buttonAdicionarSubitem" style="width:20%"> Adicionar novo subitem</button>
              	<button class="btn btn-outline-success" id="operacao" value="salvar" style="width:20%"> Salvar </button>
+             	<button class="btn btn-outline-alert"  id="operacao" value="csv" style="width:20%">Processar Arquivo</button>
             </div>
           </div>
   </div>
@@ -140,6 +144,7 @@
   <script src="js/Item.js"></script>
   <script src="js/Subitem.js"></script>
   <script src="js/menu-conta.js"></script>
+  <script src="js/jQuery/build/jquery.datetimepicker.full.js"></script>
 
 </body>
 </html>

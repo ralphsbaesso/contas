@@ -15,34 +15,42 @@ import adaptergson.FactoryGson;
 import controle.ITransportador;
 import dominio.Conta;
 import dominio.Entidade;
-import dominio.Item;
 import dominio.Subitem;
 import dominio.Transacao;
 import dominio.Transferencia;
 import enuns.EOperacao;
 import web.TransportadorWeb;
 
-public class VhTransferencia extends AbstractVH {
+public class VhTransacao extends AbstractVH {
 
-	private Transferencia transferencia;
+	private Transacao transacao;
 
 	@Override
 	public Entidade getEntidade(HttpServletRequest request) {
 
 		Gson gson = FactoryGson.getGson();
 
-		this.transferencia = new Transferencia();
+		this.transacao = new Transacao();
 
-		String jsonTransferencia = request.getParameter("transferencia");
+		String jsonTransacao = request.getParameter("transacao");
 		
-		if(jsonTransferencia != null) {
+		if(jsonTransacao != null) {
 			
 			try {
-				this.transferencia = gson.fromJson(jsonTransferencia, Transferencia.class);
+				this.transacao = gson.fromJson(jsonTransacao, Transacao.class);
 			} catch (Exception e) {
-				this.transferencia = null;
+				this.transacao = null;
 				e.printStackTrace();
 			}
+		}else {
+			
+			int id;
+			try {
+				id = Integer.valueOf(request.getParameter("txtContaId"));
+			}catch(Exception e) {
+				id = 0;
+			}
+			this.transacao.getConta().setId(id);
 		}
 
 		operacao = request.getParameter("operacao").toLowerCase();
@@ -55,7 +63,7 @@ public class VhTransferencia extends AbstractVH {
 
 		}
 
-		return this.transferencia;
+		return this.transacao;
 
 	}
 
@@ -71,60 +79,59 @@ public class VhTransferencia extends AbstractVH {
 
 		if (operacao.equals("salvar")) {
 
-			out.print(transpotadorWeb.enviarObjetoWeb());
-			return;
-
 		} else if (operacao.equals("excluir")) {
-
-			out.print(transpotadorWeb.enviarObjetoWeb());
-			return;
 
 		} else if (operacao.equals("alterar")) {
 
-			out.print(transpotadorWeb.enviarObjetoWeb());
-			return;
-
 		} else if (operacao.equals("listar")) {
 
-			List<Transferencia> transferencias = (List) transportador.getEntidades();
+			List<Transacao> transacoes = (List) transportador.getEntidades();
+			
+			for (Transacao transacao : transacoes) {
+				
+				Transferencia transferencia = transacao.getTransferencia();
+				
+				if(transferencia != null) {
+					
+					for(Transacao t : transferencia.getTransacoes()) {
+						
+						Conta conta = t.getConta();
+						conta.setCorrentista(null);
+						conta.setTransacoes(null);
+						
+						t.setTransferencia(null);
+						t.setSubitem(null);
+					}
+				}
+				
+				Conta conta = transacao.getConta();
+				
+				if(conta != null) {
+					
+					conta.setCorrentista(null);
+					conta.setTransacoes(null);
+				}
+				
+				Subitem subitem = transacao.getSubitem();
+				
+				if(subitem != null) {
+					
+					subitem.getItem().setSubitens(null);
+					subitem.getItem().setCorrentista(null);
+				}
+				
+								
+			}
+			
 
-//			for (Transferencia t : transferencias) {
-//
-//				Transacao tp = t.getTransacaoPrincipal();
-//				Transacao ts = t.getTransacaoSecundaria();
-//
-//				tp.setTransferencia(null);
-//
-//				Conta cp = tp.getConta();
-//				cp.setTransacoes(null);
-//				cp.setCorrentista(null);
-//
-//				Subitem subitem = tp.getSubitem();
-//				Item item = subitem.getItem();
-//
-//				item.setCorrentista(null);
-//				item.setSubitens(null);
-//
-//				if (ts != null) {
-//
-//					ts.setTransferencia(null);
-//					ts.setSubitem(null);
-//
-//					Conta cs = ts.getConta();
-//					
-//					if(cs != null) {
-//						cs.setTransacoes(null);
-//						cs.setCorrentista(null);
-//					}
-//				}
-//			}
+			
 		}
 
 		String destino = request.getParameter("destino");
 		
 		if(destino != null) {
 			
-			request.setAttribute("transferencias",json.toJson(transportador.getEntidades()));
+			request.setAttribute("transacoes",json.toJson(transportador.getEntidades()));
 			RequestDispatcher rd = request.getRequestDispatcher(destino);
 			rd.forward(request, response);
 			return;

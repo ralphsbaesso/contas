@@ -22,30 +22,34 @@ public class VerificarContaSegundariaDaListaTransferencia implements IStrategy {
 			
 			for(Transferencia transferencia : listaTransferencia.getTransferencias()) {
 				
-				Conta contaSegundaria = transferencia.getTransacaoSecundaria().getConta();
+				Conta contaSecundaria;
 				
-				if(contaSegundaria.getId() == Integer.MIN_VALUE) {
-					transferencia.setTransacaoSecundaria(null);
+				if(transferencia.getTransacoes().size() > 1 && transferencia.getTransacoes().get(1) != null) {
+					
+					contaSecundaria = transferencia.getTransacoes().get(1).getConta();
+				}else {
 					continue;
 				}
 				
-				List<Conta> contas = dao.listar(contaSegundaria);
+				if(contaSecundaria.getId() == Integer.MIN_VALUE) {
+					continue;
+				}
+				
+				List<Conta> contas = dao.listar(contaSecundaria);
 				
 				if(!contas.isEmpty()) {
 					
-					contaSegundaria = contas.get(0);
+					contaSecundaria = contas.get(0);
 					
-					Transacao tp = transferencia.getTransacaoPrincipal();
-					Transacao ts = transferencia.getTransacaoSecundaria();
+					Transacao tp = transferencia.getTransacoes().get(0);
+					Transacao ts = transferencia.getTransacoes().get(1);
 					
 					ts.setDataTransacao(tp.getDataTransacao());
 					ts.setDescricao(tp.getDescricao());
 					ts.setDetalhamento(tp.getDetalhamento());
 					ts.setTitulo(tp.getTitulo());
-					ts.setValor(tp.getValor());
+					ts.setValor(tp.getValor() * -1);
 					ts.setSubitem(tp.getSubitem());
-				}else {
-					transferencia.setTransacaoSecundaria(null);
 				}
 			}
 		}

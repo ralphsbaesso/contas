@@ -76,6 +76,11 @@ public class DaoItem implements Idao {
 
 			Query query = ControleConexao.entityManager.createQuery("FROM Item");
 			itens = query.getResultList();
+			
+			for(Item i : itens) {
+				
+				i.getSubitens().size();
+			}
 		}
 
 		return itens;

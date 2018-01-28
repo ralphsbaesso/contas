@@ -44,7 +44,7 @@ public class Item extends Entidade{
 		this.descricao = descricao;
 	}
 	
-	@OneToMany(mappedBy = "item", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "item", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	public List<Subitem> getSubitens() {
 		return subitens;
 	}

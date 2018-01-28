@@ -24,13 +24,13 @@ public class DaoListaTransferencia implements Idao{
 			
 			Transferencia transferencia = listaTransferencia.getTransferencias().get(i);
 			
-			Transacao tp = transferencia.getTransacaoPrincipal();
-			Transacao ts = transferencia.getTransacaoSecundaria();
+//			Transacao tp = transferencia.getTransacaoPrincipal();
+//			Transacao ts = transferencia.getTransacaoSecundaria();
 			
 			try {
 				
-				transferencia.setTransacaoPrincipal(ControleConexao.entityManager.merge(tp));
-				transferencia.setTransacaoSecundaria(ControleConexao.entityManager.merge(ts));
+//				transferencia.setTransacaoPrincipal(ControleConexao.entityManager.merge(tp));
+//				transferencia.setTransacaoSecundaria(ControleConexao.entityManager.merge(ts));
 				
 				ControleConexao.entityManager.persist(transferencia);
 				

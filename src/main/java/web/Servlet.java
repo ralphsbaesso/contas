@@ -24,6 +24,7 @@ import web.viewhelper.VhConta;
 import web.viewhelper.VhItem;
 import web.viewhelper.VhListaTransferencia;
 import web.viewhelper.VhSubitem;
+import web.viewhelper.VhTransacao;
 import web.viewhelper.VhTransferencia;
 
 
@@ -48,6 +49,7 @@ public class Servlet extends HttpServlet {
 		vhs.put("/contas/Item", new VhItem());
 		vhs.put("/contas/Subitem", new VhSubitem());
 		vhs.put("/contas/Transferencia", new VhTransferencia());
+		vhs.put("/contas/Transacao", new VhTransacao());
 	}
 	
 	@Override

@@ -12,12 +12,14 @@ import dao.implementacao.DaoConta;
 import dao.implementacao.DaoItem;
 import dao.implementacao.DaoListaTransferencia;
 import dao.implementacao.DaoSubitem;
+import dao.implementacao.DaoTransacao;
 import dao.implementacao.DaoTransferencia;
 import dominio.Conta;
 import dominio.Entidade;
 import dominio.Item;
 import dominio.ListaTransferencia;
 import dominio.Subitem;
+import dominio.Transacao;
 import dominio.Transferencia;
 import enuns.ESemafaro;
 import negocio.IStrategy;
@@ -26,6 +28,7 @@ import negocio.mapadenegocio.MapaConta;
 import negocio.mapadenegocio.MapaItem;
 import negocio.mapadenegocio.MapaListaTranferencia;
 import negocio.mapadenegocio.MapaSubitem;
+import negocio.mapadenegocio.MapaTransacao;
 import negocio.mapadenegocio.MapaTransferencia;
 
 public class Fachada implements IFachada {
@@ -48,6 +51,7 @@ public class Fachada implements IFachada {
 		this.mapaEstrategias.put(Item.class.getName(), new MapaItem());
 		this.mapaEstrategias.put(Subitem.class.getName(), new MapaSubitem());
 		this.mapaEstrategias.put(Transferencia.class.getName(), new MapaTransferencia());
+		this.mapaEstrategias.put(Transacao.class.getName(), new MapaTransacao());
 
 		// Carregar mapa de DAO
 		this.mapaDao.put(Conta.class.getName(), new DaoConta());
@@ -55,6 +59,7 @@ public class Fachada implements IFachada {
 		this.mapaDao.put(Item.class.getName(), new DaoItem());
 		this.mapaDao.put(Subitem.class.getName(), new DaoSubitem());
 		this.mapaDao.put(Transferencia.class.getName(), new DaoTransferencia());
+		this.mapaDao.put(Transacao.class.getName(), new DaoTransacao());
 	}
 
 	@Override

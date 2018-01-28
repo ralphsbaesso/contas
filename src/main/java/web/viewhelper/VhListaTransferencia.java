@@ -1,26 +1,29 @@
 package web.viewhelper;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Calendar;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.ParseException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
-import adaptergson.EmptyStringToDouble;
-import adaptergson.EmptyStringToInteger;
 import adaptergson.FactoryGson;
-import adaptergson.StringToCalendar;
 import controle.ITransportador;
 import dominio.Entidade;
 import dominio.ListaTransferencia;
 import dominio.Transacao;
 import dominio.Transferencia;
 import enuns.EOperacao;
+import processosarquivos.ArquivoSantanderCC;
+import processosarquivos.IProcessadorArquivos;
 import web.TransportadorWeb;
 
 public class VhListaTransferencia extends AbstractVH {
@@ -34,7 +37,7 @@ public class VhListaTransferencia extends AbstractVH {
 		
 		this.listaTransferencia = new ListaTransferencia();
 		
-		String jsonListaTransferencia = request.getParameter("listaTransferencia");
+		String jsonListaTransferencia = request.getParameter("entidade");
 		
 		try {
 			this.listaTransferencia = gson.fromJson(jsonListaTransferencia, ListaTransferencia.class);			
@@ -46,6 +49,14 @@ public class VhListaTransferencia extends AbstractVH {
 		operacao = request.getParameter("operacao").toLowerCase();
 
 		if (operacao.equals(EOperacao.SALVAR.getValor())) {
+			
+			if(!this.listaTransferencia.getFiltros().isEmpty()) {
+				
+				String opcao = this.listaTransferencia.getFiltros().get("arquivo").toString();
+				
+				IProcessadorArquivos pa = new ArquivoSantanderCC();
+				this.listaTransferencia.getTransferencias().addAll(pa.processaArquivo(null));
+			}
 			
 		}else if( operacao.equals(EOperacao.ALTERAR.getValor())) {
 			
@@ -72,18 +83,10 @@ public class VhListaTransferencia extends AbstractVH {
 			ListaTransferencia lista = (ListaTransferencia) transportador.getEntidade();
 			
 			for(Transferencia transferencia : lista.getTransferencias()) {
-				transferencia.getTransacaoPrincipal().setTransferencia(null);
-				transferencia.getTransacaoPrincipal().setConta(null);
-				transferencia.getTransacaoPrincipal().setSubitem(null);
 				
-				Transacao ts = transferencia.getTransacaoSecundaria();
-				if(ts != null) {
-					
-					ts.setTransferencia(null);
-					ts.setConta(null);
-					ts.setSubitem(null);
-				}
+				transferencia.setTransacoes(null);
 			}
+			
 
 			out.print(transpotadorWeb.enviarObjetoWeb());
 			return;

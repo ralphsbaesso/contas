@@ -1,7 +1,7 @@
 $(document).ready(function() {
 	
 	carregarContaPrimaria();
-	carregarTransferencias();
+	carregarTransacaoes();
 	carregarContas();
 	carregarItensComSubitens();
 	
@@ -29,7 +29,14 @@ $(document).ready(function() {
 			
 			$('#tableTransacao tbody ').append(novaLinha);
 			
-			$(".dataTransacao").mask("99/99/9999");
+			$(".dataTransacao").datetimepicker({
+								    format: 'd/m/Y',                
+								    mask:'99/99/9999',
+								    timepicker:false
+								})
+								.css({
+									"width":"110px"
+								});
 
 		} else if (operacao == 'buttonremoverlinha') {
 
@@ -50,7 +57,14 @@ $(document).ready(function() {
 			salvarItem();
 		} else if(operacao == "salvarsubitem"){
 			salvarSubitem();
+		}else if(operacao == "csv"){
+			
+			var entidade = new Object();
+			filtros = {"arquivo":"csv", "contaId" : 3}; 
+			entidade.filtros = filtros;
+			requicaoAjax(entidade, "salvar", "ListaTransferencia");
 		}
+
 	});
 	
 	function carregarContas(){
@@ -117,7 +131,8 @@ $(document).ready(function() {
 				}
 				
 				var tr = $("<tr/>")
-						.append("<td>" + formatarData(trans.transacaoPrincipal.dataCadastro) + "</td>")
+						.attr('id', trans.id)
+						.append("<td>" + formatarData(trans.transacaoPrincipal.dataTransacao) + "</td>")
 						.append("<td>" + trans.transacaoPrincipal.valor + "</td>")
 						.append("<td>" + trans.transacaoPrincipal.descricao + "</td>")
 						.append("<td>" + trans.transacaoPrincipal.titulo + "</td>")
@@ -131,6 +146,55 @@ $(document).ready(function() {
 			}
 			
 			localStorage.removeItem("transferencias");
+		}
+		
+	}
+	
+	function carregarTransacaoes(){
+		
+		var transacoes = localStorage.getItem("transacoes");
+		
+		if(transacoes != "null" && transacoes != null && transacoes != "[object Object]"){
+			
+			transacoes = JSON.parse(transacoes);
+			var tableTransacao = $("#tableTransacao");
+			$("#tableTransacao tbody").html("");
+			
+			for(var i = 0; i < transacoes.length; i++){
+				var trans = transacoes[i];
+				
+				var contaNome;
+				try{
+					contaNome = trans.conta.nome
+				}catch(err){
+					contaNome = "Desconhecido";
+				}
+				
+				var contaSecundaria;
+				try{
+					contaSecundaria = trans.transferencia.transacoes[0].conta;
+				}catch(err){
+					contaSecundaria.nome = "Desconhecido";
+				}
+				
+				var transferencia = trans.transferencia;
+				
+				var tr = $("<tr/>")
+						.attr('id', transferencia.id)
+						.append("<td>" + formatarData(trans.dataTransacao) + "</td>")
+						.append("<td>" + trans.valor + "</td>")
+						.append("<td>" + trans.descricao + "</td>")
+						.append("<td>" + trans.titulo + "</td>")
+						.append("<td>" + trans.detalhamento + "</td>")
+						.append("<td>" + trans.subitem.item.descricao + "</td>")
+						.append("<td>" + trans.subitem.descricao + "</td>")
+						.append("<td>" + trans.qtdeItem + "</td>")
+						.append("<td>" + contaNome + "</td>")
+						;
+				tableTransacao.append(tr);
+			}
+			
+			localStorage.removeItem("transacoes");
 		}
 		
 	}
@@ -178,29 +242,37 @@ $(document).ready(function() {
 				
 				//objetos
 				var transferencia = new Object();
-				var transacaoPrincipal = new Object();
-				var transacaoSecundaria = new Object();
+				var transacoes = new Array();
+				var transacao = new Object();
 				var contaPrincipal = new Object();
 				var contaSecundaria = new Object();
 				var subitem = new Object();
 				
+				//transacao principal
 				subitem.id = linhas.eq(i).find("td [name = txtSubitemId]").val();
 				contaPrincipal.id = $("#labelContaPrimaria").val();
-				transacaoPrincipal.dataTransacao = linhas.eq(i).find("td [name = txtData]").val();
-				transacaoPrincipal.valor = linhas.eq(i).find("td [name = txtValor]").val();
-				transacaoPrincipal.descricao = linhas.eq(i).find("td [name = txtDescricao]").val();
-				transacaoPrincipal.titulo = linhas.eq(i).find("td [name = txtTitulo]").val();
-				transacaoPrincipal.detalhamento = linhas.eq(i).find("td [name = txtDetalhamento]").val();
-				transacaoPrincipal.qtdeItem = linhas.eq(i).find("td [name = txtQtdeItem]").val();
+				transacao.dataTransacao = linhas.eq(i).find("td [name = txtData]").val();
+				transacao.valor = linhas.eq(i).find("td [name = txtValor]").val();
+				transacao.descricao = linhas.eq(i).find("td [name = txtDescricao]").val();
+				transacao.titulo = linhas.eq(i).find("td [name = txtTitulo]").val();
+				transacao.detalhamento = linhas.eq(i).find("td [name = txtDetalhamento]").val();
+				transacao.qtdeItem = linhas.eq(i).find("td [name = txtQtdeItem]").val();
+				
+				transacao.conta = contaPrincipal;
+				transacao.subitem = subitem;
+				
+				transacoes.push(transacao)
+				
+				//transacao secundaria
+				transacao = new Object();
+				
 				contaSecundaria.id = linhas.eq(i).find("td [name = txtContaSegundariaId]").val();
 				
-				transacaoPrincipal.conta = contaPrincipal;
-				transacaoPrincipal.subitem = subitem;
+				transacao.conta = contaSecundaria;
 				
-				transacaoSecundaria.conta = contaSecundaria;
+				transacoes.push(transacao)
 
-				transferencia.transacaoPrincipal = transacaoPrincipal;
-				transferencia.transacaoSecundaria = transacaoSecundaria;
+				transferencia.transacoes = transacoes;
 				
 				transferencias.push(transferencia);
 			}
@@ -334,6 +406,47 @@ $(document).ready(function() {
 		 });
 	}
 	
+	//modal para atualizar uma célula
+	function corrigirCelula(celula){
+		
+		$("#divBody").prepend(
+				"<div class='modal fade' id='modalNovoSubitem' tabindex='-1' role='dialog' aria-labelledby='myModalLabel'>" +
+				  "<div class='modal-dialog' role='document'>" +
+				    "<div class='modal-content'>" +
+				      "<div class='modal-header'>" +
+				        "<button type='button' class='close' data-dismiss='modal' aria-label='Close'><span aria-hidden='true'>&times;</span></button>" +
+				        "<h4 class='modal-title' id='myModalLabel'>Novo Subitem</h4>" +
+				      "</div>" +
+				      "<div class='modal-body'>" +
+				      	celula.text() +
+				      "</div>" +
+				      "<div class='modal-footer'>" +
+				        "<button type='button' class='btn btn-default' data-dismiss='modal'>Fechar</button>" +
+				      "</div>" +
+				    "</div>" +
+				  "</div>" +
+				"</div> " );
+				
+				// carregar itens
+				var options = $("#tableTransacao tr #selectItem option");
+				var select = $("#divBody #selectItem");
+				select.html(options.clone());
+				
+				// abrir modal
+				 $('#modalNovoSubitem').modal('show');
+				 $('.modal-backdrop').css({
+					   'background-color' : '#FFE4C4',
+					   'opacity' : 0.4
+				 });
+				 // fechando o modal
+				 $('#modalNovoSubitem').on('hide.bs.modal', function(){
+					 $('#modalNovoSubitem .modal-body').html("");
+					 $('#divAdvertencia').html('');
+					 // limpando as mensagens
+				 });
+				 
+	}
+	
 	function salvarItem(){
 		
 		//modalNovoItem
@@ -399,7 +512,51 @@ $(document).ready(function() {
 		atualizarSubitem(this);
 	});
 	
+	// corrigir celula aqui.
+	
 	// CONFIGURAÇÕES
-	$(".dataTransacao").mask("99/99/9999");
+	
+	
+	$.datetimepicker.setLocale('pt-BR');
+	
+	$('.dataTransacao')
+		.datetimepicker({
+		    format: 'd/m/Y',                
+		    mask:'99/99/9999',
+		    timepicker:false
+		})
+		.css({
+			"width":"110px"
+		});
+	
+	function requicaoAjax(entidade, operacao, servlet){
+		
+		var entidadeJson = JSON.stringify(entidade);
+	
+		// requisição AJAX
+		$.ajax(
+				{
+					url : servlet,
+					type : 'post',
+					dataType : 'json',
+					data : {
+						operacao : operacao,
+						entidade : entidadeJson
+	
+					},
+	
+					beforeSend : function() {
+						$("#sucesso").html(
+								"<p align='center'>Carregando...</p>");
+					}
+				}).done(
+				function(msg) {
+					}).fail(function(jqXHR, textStatus, msg) {
+			alert(msg + " Erro grave!!!");
+		});
+	}
 
+	
+	
+	
 });

@@ -1,3 +1,5 @@
 /target/
 /bin/
 /contas/
+*banco.sql
+arquivos

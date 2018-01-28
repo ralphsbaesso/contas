@@ -68,7 +68,7 @@ public class DaoTransferencia implements Idao {
 	public List listar(Entidade entidade) {
 
 		Transferencia transferencia = (Transferencia) entidade;
-		Conta conta = transferencia.getTransacaoPrincipal().getConta();
+		Conta conta = transferencia.getTransacoes().get(0).getConta();
 		
 		List<Transferencia> transferencias = new ArrayList();
 		
@@ -78,12 +78,21 @@ public class DaoTransferencia implements Idao {
 			
 		}else if(conta != null){
 			
+			// Conta Primaria
 			TypedQuery<Transferencia> query = ControleConexao.entityManager
 												.createQuery
-												("SELECT t FROM Transferencia t JOIN t.transacaoPrincipal tp JOIN tp.conta conta where conta.id = :id",
+												("SELECT t FROM Transferencia t JOIN t.transacaoPrincipal tp JOIN tp.conta conta where conta.id = :id ORDER BY tp.dataTransacao, tp.dataCadastro",
 												Transferencia.class);
 			
-			transferencias = query.setParameter("id", conta.getId()).getResultList();
+			transferencias.addAll(query.setParameter("id", conta.getId()).getResultList());
+			
+			// Conta secundaria
+			TypedQuery<Transferencia> query2 = ControleConexao.entityManager
+					.createQuery
+					("SELECT t FROM Transferencia t JOIN t.transacaoSecundaria tp JOIN tp.conta conta where conta.id = :id ORDER BY tp.dataTransacao, tp.dataCadastro",
+					Transferencia.class);
+
+			transferencias.addAll(query2.setParameter("id", conta.getId()).getResultList());
 		}
 
 		return transferencias;

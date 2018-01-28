@@ -28,7 +28,7 @@ public class Correntista extends Pessoa {
 		this.contas = contas;
 	}
 	
-	@OneToMany(mappedBy = "correntista", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "correntista", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@Fetch(FetchMode.SUBSELECT)
 	public List<Item> getItens() {
 		return itens;
