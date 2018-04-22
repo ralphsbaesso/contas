@@ -14,7 +14,7 @@ public class Transferencia extends Entidade {
 	
 	private List<Transacao> transacoes = new ArrayList<>();
 
-	@OneToMany(mappedBy = "transferencia", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "transferencia", cascade = CascadeType.REMOVE)
 	public List<Transacao> getTransacoes() {
 		return transacoes;
 	}

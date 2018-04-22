@@ -14,6 +14,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import adaptergson.EmptyStringToDouble;
+import adaptergson.FactoryGson;
 import adaptergson.StringToCalendar;
 import controle.ITransportador;
 import dominio.Conta;
@@ -28,15 +29,13 @@ public class VhConta extends AbstractVH {
 	@Override
 	public Entidade getEntidade(HttpServletRequest request) {
 
-		Gson gson = new GsonBuilder()
-				.registerTypeAdapter(Calendar.class, new StringToCalendar())
-				.registerTypeAdapter(double.class, new EmptyStringToDouble())
-				.registerTypeAdapter(Double.class, new EmptyStringToDouble())
-				.create();
-		
 		this.conta = new Conta();
+		Gson gson = FactoryGson.getGson();
 		
-		String jsonConta = request.getParameter("conta");
+		String jsonRequisicao = request.getParameter("requisicao");
+		requisicao = gson.fromJson(jsonRequisicao, Requisicao.class);
+
+		String jsonConta= request.getParameter("entidade");
 		
 		if(jsonConta != null) {
 			
@@ -48,14 +47,13 @@ public class VhConta extends AbstractVH {
 			}
 		}
 
-		operacao = request.getParameter("operacao").toLowerCase();
-
-		if (operacao.equals(EOperacao.SALVAR.getValor())) {
+		if (requisicao.getOperacao().equals(EOperacao.SALVAR)) {
 			
-		}else if( operacao.equals(EOperacao.ALTERAR.getValor())) {
+		}else if( requisicao.getOperacao().equals(EOperacao.ALTERAR)) {
 			
-		}else if(operacao.equals(EOperacao.EXCLUIR.getValor())) {
+		}else if(requisicao.getOperacao().equals(EOperacao.EXCLUIR)) {
 		
+		}else if(requisicao.getOperacao().equals(EOperacao.LISTAR)) {
 			
 		}
 
@@ -73,13 +71,13 @@ public class VhConta extends AbstractVH {
 
 		transpotadorWeb.recebeObjetoMensagem(transportador);
 
-		if (operacao.equals("salvar")) {
+		if (requisicao.getOperacao().equals(EOperacao.SALVAR)) {
 
-		} else if (operacao.equals("excluir")) {
+		} else if (requisicao.getOperacao().equals(EOperacao.ALTERAR)) {
 			
-		} else if (operacao.equals("alterar")) {
+		} else if (requisicao.getOperacao().equals(EOperacao.EXCLUIR)) {
 			
-		} else if (operacao.equals("listar")) {
+		} else if (requisicao.getOperacao().equals(EOperacao.LISTAR)) {
 			
 			List<Conta> contas = (List) transpotadorWeb.getEntidades();
 			
@@ -91,12 +89,10 @@ public class VhConta extends AbstractVH {
 			
 		}
 		
-		String destino = request.getParameter("destino");
-		
-		if(destino != null) {
+		if(this.requisicao.getDestino() != null) {
 			
-			request.setAttribute("contas",json.toJson(transportador.getEntidades()));
-			RequestDispatcher rd = request.getRequestDispatcher(destino);
+			request.setAttribute("conta",json.toJson(transportador.getEntidades().get(0)));
+			RequestDispatcher rd = request.getRequestDispatcher(this.requisicao.getDestino());
 			rd.forward(request, response);
 			return;
 		}

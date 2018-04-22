@@ -27,6 +27,7 @@ public class Transacao extends Entidade {
 	private Conta conta = new Conta();
 	private Transferencia transferencia = new Transferencia();
 	private int qtdeItem = 0;
+	private String docto;
 	
 	@OneToOne
 	@JoinColumn(name = "subitem_id", nullable = true)
@@ -102,6 +103,14 @@ public class Transacao extends Entidade {
 	}
 	public void setQtdeItem(int qtdeItem) {
 		this.qtdeItem = qtdeItem;
+	}
+	
+	@Column(name = "docto")
+	public String getDocto() {
+		return docto;
+	}
+	public void setDocto(String docto) {
+		this.docto = docto;
 	}
 	
 }

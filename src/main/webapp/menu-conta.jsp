@@ -14,14 +14,14 @@
 <title>Contas</title>
 
 <%
-	String contas = (String)request.getAttribute("contas");
+	String conta = (String)request.getAttribute("conta");
 	String transferencias = (String)request.getAttribute("transferencias");
 	String transacoes = (String)request.getAttribute("transacoes");
 %>
 	
 <script type="text/javascript">
 	
-	localStorage.setItem("contas", JSON.stringify(<%=contas %>));
+	localStorage.setItem("conta", JSON.stringify(<%=conta %>));
 	localStorage.setItem("transferencias", JSON.stringify(<%=transferencias %>));
 	localStorage.setItem("transacoes", JSON.stringify(<%=transacoes %>));
 </script>
@@ -69,7 +69,8 @@
             <div class="card-body" style="overflow:auto">
               <table class="table" id="tableTransacao">
                 <thead>
-                  <tr id="linha">>
+                  <tr id="linha">
+                  	 <th>Número</th>
                     <th>Data</th>
                     <th>Valor</th>
                     <th>Descrição</th>
@@ -83,6 +84,9 @@
                 </thead>
                 <tbody>
                   <tr>
+                    <td>
+                    	<label name="txtTransacaoId"></label>
+                    </td>
                     <td>
                       <input class="form-control dataTransacao" type="text" name="txtData"> </td>
                     <td>
@@ -119,7 +123,6 @@
             	<button class="btn btn-outline-success" id="operacao" value="buttonAdicionarItem" style="width:20%"> Adicionar novo item</button>
             	<button class="btn btn-outline-success" id="operacao" value="buttonAdicionarSubitem" style="width:20%"> Adicionar novo subitem</button>
              	<button class="btn btn-outline-success" id="operacao" value="salvar" style="width:20%"> Salvar </button>
-             	<button class="btn btn-outline-alert"  id="operacao" value="csv" style="width:20%">Processar Arquivo</button>
             </div>
           </div>
   </div>
@@ -138,11 +141,7 @@
   <script src="js/cdnjs.cloudflare.com-ajax-libs-jquery.mask-1.14.13-jquery.mask.min.js"></script>
   <script src="js/componentes.js"></script>
   <script src="js/util.js"></script>
-  <script src="js/ListaTransferencia.js"></script>
-  <script src="js/Transferencia.js"></script>
-  <script src="js/Conta.js"></script>
-  <script src="js/Item.js"></script>
-  <script src="js/Subitem.js"></script>
+  <script src="js/requisicao.js"></script>
   <script src="js/menu-conta.js"></script>
   <script src="js/jQuery/build/jquery.datetimepicker.full.js"></script>
 

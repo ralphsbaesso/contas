@@ -1,33 +1,39 @@
-package processosarquivos;
+package dominio.leitorarquivo;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
 
 import dominio.Conta;
+import dominio.ListaTransferencia;
 import dominio.Transacao;
 import dominio.Transferencia;
 
-public class ArquivoSantanderCC implements IProcessadorArquivos {
+public class ReadTwoColumnValue extends AbstractCarregarArquivo {
+	
+	public ReadTwoColumnValue(Conta conta) {
+		super(conta);
+	}
 
 	@Override
-	public List<Transferencia> processaArquivo(Conta conta) {
-		List<Transferencia> transferencias = new ArrayList();
-
-		Path path = Paths.get("arquivos/arquivo.csv");
-
+	public ListaTransferencia read(BufferedReader reader) throws Exception {
+		
 		String linha;
 
-		try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8);) {
+		try {
 			while ((linha = reader.readLine()) != null) {
 
 				String[] campos = linha.split(";");
+				
+				if(campos.length == 0)
+					continue;
 
 				if (campos[0].trim().equals("Data")) {
 					// Primeira linha
@@ -43,7 +49,9 @@ public class ArquivoSantanderCC implements IProcessadorArquivos {
 					System.err.println("Erro em converter a data!");
 					continue;
 				}
+
 				tp.setDescricao(campos[1].trim());
+				tp.setDocto(campos[2].trim());
 
 				Double valor;
 				try {
@@ -60,23 +68,25 @@ public class ArquivoSantanderCC implements IProcessadorArquivos {
 					tp.setValor(Double.MIN_VALUE);
 				}
 
-				conta = new Conta();
-				conta.setId(3);
-				// conta
 				tp.setConta(conta);
 
 				t.getTransacoes().add(tp);
-				transferencias.add(t);
+				this.lista.getTransferencias().add(t);
 			}
+			reader.close();
 
+		} catch (NoSuchFileException e) {
+			e.printStackTrace();
+			throw new Exception("Nenhum arquivo encontrado");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}catch(Exception e) {
+			throw new Exception("Erro");
+		} catch (Exception e) {
 			e.printStackTrace();
+			throw new Exception("Erro");
 		}
 
-		return transferencias;
+		return lista;
 	}
 
 }

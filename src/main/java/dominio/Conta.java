@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -13,9 +16,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+
+import enuns.ELeitorArquivo;
 
 @Entity
 @Table(name = "contas")
@@ -24,6 +30,7 @@ public class Conta extends Entidade{
 	private String nome;
 	private Correntista correntista = new Correntista();
 	private List<Transacao> transacoes = new ArrayList();
+	private ELeitorArquivo arquivo;
 	
 	@OneToMany(mappedBy = "conta", cascade = CascadeType.ALL)
 	public List<Transacao> getTransacoes() {
@@ -47,6 +54,15 @@ public class Conta extends Entidade{
 	}
 	public void setCorrentista(Correntista correntista) {
 		this.correntista = correntista;
+	}
+	
+	@Enumerated(EnumType.STRING)
+	@Column(name = "arquivo")
+	public ELeitorArquivo getArquivo() {
+		return arquivo;
+	}
+	public void setArquivo(ELeitorArquivo arquivo) {
+		this.arquivo = arquivo;
 	}
 
 }

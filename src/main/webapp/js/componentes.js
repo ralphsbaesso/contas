@@ -74,3 +74,23 @@ function htmlButtonDelete(id){
 	return "<button id='" + id + "' class='btn btn-outline-danger form-control buttonExcluir' name='operacao'>Excluir</button>";
 }
 
+function htmlSelected(select, id){
+	
+	var options = select.find("option");
+	
+	for(var i = 0; i < options.length; i++){
+		
+		try{
+			
+			if(options.eq(i).val() == id){
+				options.eq(i).attr("selected", true);
+			}else{
+				options.eq(i).attr("selected", false);
+			}
+		}catch(err){
+			alert("erro");
+		}
+	}
+	return select.attr("id",'selectItem');
+}
+

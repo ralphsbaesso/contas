@@ -28,11 +28,13 @@ public class VhTransacao extends AbstractVH {
 	@Override
 	public Entidade getEntidade(HttpServletRequest request) {
 
-		Gson gson = FactoryGson.getGson();
-
 		this.transacao = new Transacao();
+		Gson gson = FactoryGson.getGson();
+		
+		String jsonRequisicao = request.getParameter("requisicao");
+		requisicao = gson.fromJson(jsonRequisicao, Requisicao.class);
 
-		String jsonTransacao = request.getParameter("transacao");
+		String jsonTransacao = request.getParameter("entidade");
 		
 		if(jsonTransacao != null) {
 			
@@ -42,24 +44,13 @@ public class VhTransacao extends AbstractVH {
 				this.transacao = null;
 				e.printStackTrace();
 			}
-		}else {
-			
-			int id;
-			try {
-				id = Integer.valueOf(request.getParameter("txtContaId"));
-			}catch(Exception e) {
-				id = 0;
-			}
-			this.transacao.getConta().setId(id);
-		}
+		}		
 
-		operacao = request.getParameter("operacao").toLowerCase();
+		if (requisicao.getOperacao().equals(EOperacao.SALVAR)) {
 
-		if (operacao.equals(EOperacao.SALVAR.getValor())) {
+		} else if (this.requisicao.getOperacao().equals(EOperacao.ALTERAR)) {
 
-		} else if (operacao.equals(EOperacao.ALTERAR.getValor())) {
-
-		} else if (operacao.equals(EOperacao.EXCLUIR.getValor())) {
+		} else if (requisicao.getOperacao().equals(EOperacao.EXCLUIR.getValor())) {
 
 		}
 
@@ -77,32 +68,59 @@ public class VhTransacao extends AbstractVH {
 
 		transpotadorWeb.recebeObjetoMensagem(transportador);
 
-		if (operacao.equals("salvar")) {
+		if (requisicao.getOperacao().equals(EOperacao.SALVAR)) {
 
-		} else if (operacao.equals("excluir")) {
+		} else if (requisicao.getOperacao().equals(EOperacao.ALTERAR)) {
 
-		} else if (operacao.equals("alterar")) {
+		} else if (requisicao.getOperacao().equals(EOperacao.EXCLUIR)) {
 
-		} else if (operacao.equals("listar")) {
+		} else if (requisicao.getOperacao().equals(EOperacao.LISTAR)) {
 
 			List<Transacao> transacoes = (List) transportador.getEntidades();
+			
+			int idContaPrincipal = this.transacao.getConta().getId();
 			
 			for (Transacao transacao : transacoes) {
 				
 				Transferencia transferencia = transacao.getTransferencia();
 				
-				if(transferencia != null) {
+				Transferencia novaTransferencia = new Transferencia();
+				
+				// id da transferencia;
+				int id = transferencia.getId();
+				novaTransferencia.setId(id);
+				
+				// resgatar a segunda conta se houver
+				for(Transacao trans : transferencia.getTransacoes()) {
 					
-					for(Transacao t : transferencia.getTransacoes()) {
+					if(trans.getConta().getId() != idContaPrincipal) {
 						
-						Conta conta = t.getConta();
+						Conta conta = trans.getConta();
 						conta.setCorrentista(null);
 						conta.setTransacoes(null);
 						
-						t.setTransferencia(null);
-						t.setSubitem(null);
+						Transacao novaTransacao = new Transacao();
+						novaTransacao.setId(trans.getId());
+						novaTransacao.setConta(conta);
+						novaTransferencia.getTransacoes().add(novaTransacao);
 					}
+					
+					
 				}
+				for(Transacao trans : transferencia.getTransacoes()) {
+					
+					// popular os dados da conta principal
+					Conta contaPrincipal = this.transacao.getConta();
+					if(contaPrincipal.getId() == trans.getConta().getId() && contaPrincipal.getNome() == null) {
+						
+						contaPrincipal.setNome(trans.getConta().getNome());
+						break;
+					}
+					
+				}
+				// atribuir a nova transferencia com o mesmo Id para a transacao
+				// manobra necessario para não cair num loop sem fim na transformação para json
+				transacao.setTransferencia(novaTransferencia);
 				
 				Conta conta = transacao.getConta();
 				
@@ -118,21 +136,15 @@ public class VhTransacao extends AbstractVH {
 					
 					subitem.getItem().setSubitens(null);
 					subitem.getItem().setCorrentista(null);
-				}
-				
-								
-			}
-			
-
-			
+				}			
+			}			
 		}
-
-		String destino = request.getParameter("destino");
 		
-		if(destino != null) {
+		if(requisicao.getDestino() != null) {			
 			
+			request.setAttribute("conta",json.toJson(this.transacao.getConta()));
 			request.setAttribute("transacoes",json.toJson(transportador.getEntidades()));
-			RequestDispatcher rd = request.getRequestDispatcher(destino);
+			RequestDispatcher rd = request.getRequestDispatcher(requisicao.getDestino());
 			rd.forward(request, response);
 			return;
 		}

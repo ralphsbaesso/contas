@@ -1,14 +1,19 @@
 $(document).ready(function() {
 	
-	carregarContaPrimaria();
-	carregarTransacaoes();
-	carregarContas();
+	// variaveis globais
+	var selectPrincipal = $("<select>");
+	var selectConta = $("<select>").addClass("form-control").attr('name','txtContaSegundariaId');
+	
 	carregarItensComSubitens();
+	carregarContaPrincipal();
+	carregarContas();
+	carregarTransacaoes();
+	
 	
 	// OPERAÇÃO
 	$("body").on('click', '#operacao', function() {
 
-		var operacao = $(this).val().toLowerCase();
+		var operacao = $(this).val();
 
 		if (operacao == 'salvar') {
 			salvar();
@@ -21,7 +26,7 @@ $(document).ready(function() {
 		} else if (operacao == 'limparcampos') {
 
 			limparCampos();
-		} else if (operacao == 'buttonadicionarlinha') {
+		} else if (operacao == 'buttonAdicionarLinha') {
 
 			var linhas = $('#tableTransacao tbody tr').clone();
 			var indice = linhas.length -1;
@@ -49,28 +54,24 @@ $(document).ready(function() {
 			linha.slideUp('fast', function() {
 				linha.remove();
 			});
-		} else if(operacao == "buttonadicionaritem"){
+		} else if(operacao == "buttonAdicionarItem"){
 			modalNovoItem();
-		} else if(operacao == "buttonadicionarsubitem"){
+		} else if(operacao == "buttonAdicionarSubitem"){
 			modalNovoSubitem();
-		} else if(operacao == "salvaritem"){
+		} else if(operacao == "salvarItem"){
 			salvarItem();
-		} else if(operacao == "salvarsubitem"){
+		} else if(operacao == "salvarSubitem"){
 			salvarSubitem();
-		}else if(operacao == "csv"){
-			
-			var entidade = new Object();
-			filtros = {"arquivo":"csv", "contaId" : 3}; 
-			entidade.filtros = filtros;
-			requicaoAjax(entidade, "salvar", "ListaTransferencia");
 		}
 
 	});
 	
 	function carregarContas(){
 		
-		var objConta = new Conta();
-		var objJson = objConta.listar();
+		var requisicao = new Object();
+		requisicao.operacao = "LISTAR";
+		
+		var objJson = requisicaoAjax(new Object(), requisicao, "Conta");
 		
 		var contas = objJson.entidades;
 		var conta = objJson.entidade;
@@ -80,10 +81,15 @@ $(document).ready(function() {
 		
 		if(semafaro == "VERDE"){
 			
+			$("#selectContaPrimaria").append("<option>");
+			$("#tableTransacao tr #selectContaSecundaria").append("<option>");
+			selectConta.append("<option>");
+			
 			contas.forEach(function(ent){
 				
 				$("#selectContaPrimaria").append("<option value ='" + ent.id + "'>" + ent.nome + "</option>");
 				$("#tableTransacao tr #selectContaSecundaria").append("<option value ='" + ent.id + "'>" + ent.nome + "</option>");
+				selectConta.append("<option  value ='" + ent.id + "'>" + ent.nome + "</option>");
 			});
 			
 		}else if(semafaro == "VERMELHO"){
@@ -95,59 +101,18 @@ $(document).ready(function() {
 		}
 	}
 	
-	function carregarContaPrimaria(){
+	function carregarContaPrincipal(){
 		
-		var contas = localStorage.getItem("contas");
+		var conta = localStorage.getItem("conta");
 		
-		if(contas != "null" && contas != "[object Object]"){
+		if(conta != "null" && conta != "[object Object]"){
 			
-			contas = JSON.parse(contas);
+			conta = JSON.parse(conta);
 			
-			$("#labelContaPrimaria").text(contas[0].nome).val(contas[0].id);
-			
-			localStorage.removeItem("contas");
+			$("#labelContaPrimaria").text(conta.nome).val(conta.id);
 		}
 		
-	}
-	
-	function carregarTransferencias(){
-		
-		var transferencias = localStorage.getItem("transferencias");
-		
-		if(transferencias != "null" && transferencias != null && transferencias != "[object Object]"){
-			
-			transferencias = JSON.parse(transferencias);
-			var tableTransacao = $("#tableTransacao");
-			$("#tableTransacao tbody").html("");
-			
-			for(var i = 0; i < transferencias.length; i++){
-				var trans = transferencias[i];
-				
-				var contaNome;
-				try{
-					contaNome = trans.transacaoSecundaria.conta.nome
-				}catch(err){
-					contaNome = "Desconhecido";
-				}
-				
-				var tr = $("<tr/>")
-						.attr('id', trans.id)
-						.append("<td>" + formatarData(trans.transacaoPrincipal.dataTransacao) + "</td>")
-						.append("<td>" + trans.transacaoPrincipal.valor + "</td>")
-						.append("<td>" + trans.transacaoPrincipal.descricao + "</td>")
-						.append("<td>" + trans.transacaoPrincipal.titulo + "</td>")
-						.append("<td>" + trans.transacaoPrincipal.detalhamento + "</td>")
-						.append("<td>" + trans.transacaoPrincipal.subitem.item.descricao + "</td>")
-						.append("<td>" + trans.transacaoPrincipal.subitem.descricao + "</td>")
-						.append("<td>" + trans.transacaoPrincipal.qtdeItem + "</td>")
-						.append("<td>" + contaNome + "</td>")
-						;
-				tableTransacao.append(tr);
-			}
-			
-			localStorage.removeItem("transferencias");
-		}
-		
+		return conta;
 	}
 	
 	function carregarTransacaoes(){
@@ -161,37 +126,65 @@ $(document).ready(function() {
 			$("#tableTransacao tbody").html("");
 			
 			for(var i = 0; i < transacoes.length; i++){
-				var trans = transacoes[i];
 				
-				var contaNome;
+				var trans = transacoes[i];
+				var transSecundaria = {id:0};
+				
+				var divContaSecundaria;
 				try{
-					contaNome = trans.conta.nome
+					divContaSecundaria = $("<div>").prepend(htmlSelected(selectConta, trans.transferencia.transacoes[0].conta.id));
+					transSecundaria.id = trans.transferencia.transacoes[0].id;
 				}catch(err){
-					contaNome = "Desconhecido";
+					divContaSecundaria = $("<div>").prepend(htmlSelected(selectConta, 0));
 				}
 				
-				var contaSecundaria;
-				try{
-					contaSecundaria = trans.transferencia.transacoes[0].conta;
-				}catch(err){
-					contaSecundaria.nome = "Desconhecido";
+				var subitem = trans.subitem;
+				if(typeof subitem === "undefined"){
+					subitem = {id:0};
+					subitem.item = {id:0};
 				}
 				
 				var transferencia = trans.transferencia;
 				
+				var divSelectItem = $("<div>").prepend(htmlSelected(selectPrincipal, subitem.item.id));
+				
+				var idSubitem = subitem.id;
+				
+				var divSelectSubitem = $("<div>");
+				
+				var selectSubitem = $("<select class='form-control' name='txtSubitemId' id='selectSubitem'></select>");
+				
+				if(idSubitem > 0){
+					
+					
+					var subitens = JSON.parse(divSelectItem.find("[value = " + subitem.item.id + "]").attr('name'));
+					
+					subitens.forEach(function(subitem){
+						selectSubitem.append("<option value ='" + subitem.id + "'>" + subitem.descricao + "</option>");
+					});
+					
+					divSelectSubitem.append(htmlSelected(selectSubitem, idSubitem));
+				}
+				
+				divSelectSubitem.append(selectSubitem);
+				
+				
 				var tr = $("<tr/>")
-						.attr('id', transferencia.id)
-						.append("<td>" + formatarData(trans.dataTransacao) + "</td>")
-						.append("<td>" + trans.valor + "</td>")
-						.append("<td>" + trans.descricao + "</td>")
-						.append("<td>" + trans.titulo + "</td>")
-						.append("<td>" + trans.detalhamento + "</td>")
-						.append("<td>" + trans.subitem.item.descricao + "</td>")
-						.append("<td>" + trans.subitem.descricao + "</td>")
-						.append("<td>" + trans.qtdeItem + "</td>")
-						.append("<td>" + contaNome + "</td>")
-						;
+				.attr('id', transferencia.id)
+				.append("<td> " + (i + 1) + " <label name='txtTransacaoId' style='display:none'>" + trans.id + "</label></td>")
+				.append("<td><label name='txtData'>" + formatarData(trans.dataTransacao) + "</label></td>")
+				.append("<td><label name='txtValor'>" + trans.valor + "</label></td>")
+				.append("<td><textarea class='form-control' name='txtDescricao'>" + trans.descricao + "</textarea></td>")
+				.append("<td><input type='text' class='form-control' name='txtTitulo' value='" + trans.titulo + "'></td>")
+				.append("<td><input type='text' class='form-control' name='txtDetalhamento' value='" + trans.detalhamento + "'></td>")
+				.append("<td>" + divSelectItem.html() + "</td>")
+				.append("<td>" + divSelectSubitem.html() + "</td>")
+				.append("<td> <input class='form-control' type='text' name='txtQtdeItem' value='" + trans.qtdeItem + "'></td>")
+				.append("<td>" + divContaSecundaria.html() + "<input type='hidden' name='txtTransacaoSecundariaId' value='" + transSecundaria.id + "'></td>")
+				;
 				tableTransacao.append(tr);
+				
+				
 			}
 			
 			localStorage.removeItem("transacoes");
@@ -201,8 +194,10 @@ $(document).ready(function() {
 	
 	function carregarItensComSubitens(){
 		
-		var objItem = new Item();
-		var objJson = objItem.listar();
+		var requisicao = new Object();
+		requisicao.operacao = "LISTAR";
+		
+		var objJson = requisicaoAjax(new Object(), requisicao, "Item");
 		
 		var itens = objJson.entidades;
 		var item = objJson.entidade;
@@ -211,15 +206,19 @@ $(document).ready(function() {
 		
 		if(semafaro == "VERDE"){
 			
+			selectPrincipal = $("<select>").addClass("form-control").attr("id", "selectItem");
+			
 			// limpar selects
 			$("#tableTransacao tr #selectItem").html("<option value =''></option>");
 			$("#tableTransacao tr #selectSubitem").html("<option value =''></option>");
+			selectPrincipal.html("<option value =''></option>");
 			
 			itens.forEach(function(ent){
 				
 				var jsonSuitem = JSON.stringify(ent.subitens);
 				
 				$("#tableTransacao tr #selectItem").append("<option name='" + jsonSuitem + "' value ='" + ent.id + "'>" + ent.descricao + "</option>");
+				selectPrincipal.append("<option name='" + jsonSuitem + "' value ='" + ent.id + "'>" + ent.descricao + "</option>");
 			});
 			
 		}else if(semafaro == "VERMELHO"){
@@ -251,12 +250,26 @@ $(document).ready(function() {
 				//transacao principal
 				subitem.id = linhas.eq(i).find("td [name = txtSubitemId]").val();
 				contaPrincipal.id = $("#labelContaPrimaria").val();
-				transacao.dataTransacao = linhas.eq(i).find("td [name = txtData]").val();
-				transacao.valor = linhas.eq(i).find("td [name = txtValor]").val();
+				transacao.dataTransacao = linhas.eq(i).find("td [name = txtData]").text();
+				transacao.valor = linhas.eq(i).find("td [name = txtValor]").text();
 				transacao.descricao = linhas.eq(i).find("td [name = txtDescricao]").val();
 				transacao.titulo = linhas.eq(i).find("td [name = txtTitulo]").val();
 				transacao.detalhamento = linhas.eq(i).find("td [name = txtDetalhamento]").val();
 				transacao.qtdeItem = linhas.eq(i).find("td [name = txtQtdeItem]").val();
+				
+				var idTransferencia = linhas.eq(i).attr('id');
+				if(typeof idTransferencia === "undefined"){
+					transferencia.id = 0;
+				}else{
+					transferencia.id = idTransferencia;
+				}
+				
+				var idTransacao = linhas.eq(i).find("td [name=txtTransacaoId]").text();
+				if(typeof idTransacao === "undefined"){
+					transacao.id = 0;
+				}else{
+					transacao.id = idTransacao;
+				}				
 				
 				transacao.conta = contaPrincipal;
 				transacao.subitem = subitem;
@@ -265,6 +278,7 @@ $(document).ready(function() {
 				
 				//transacao secundaria
 				transacao = new Object();
+				transacao.id = linhas.eq(i).find("td [name = txtTransacaoSecundariaId]").val();
 				
 				contaSecundaria.id = linhas.eq(i).find("td [name = txtContaSegundariaId]").val();
 				
@@ -280,9 +294,10 @@ $(document).ready(function() {
 			var listaTransferencia = new Object();
 			
 			listaTransferencia.transferencias = transferencias;	
+		
+			var requisicao = {operacao : 'SALVAR'};
 			
-			var objListaTransferencia = new ListaTransferencia();
-			var objJson = objListaTransferencia.salvar(listaTransferencia);
+			var objJson = requisicaoAjax(listaTransferencia, requisicao, "ListaTransferencia");
 			
 			if(objJson.semafaro == 'VERDE'){
 				alert("transações salvas com sucesso");
@@ -454,8 +469,8 @@ $(document).ready(function() {
 		item.descricao = $("#modalNovoItem [name = txtDescricao").val();
 		item.detalhamento = $("#modalNovoItem [name = txtDetalhamento").val();
 		
-		var objItem = new Item();
-		var objJson = objItem.salvar(item);
+		var requisicao = {operacao : "SALVAR"};
+		var objJson = requisicaoAjax(item, requisicao, "Item");
 		
 		if(objJson.semafaro == "VERDE"){
 			alert("Item salvo com sucesso!");
@@ -476,8 +491,8 @@ $(document).ready(function() {
 		item.id = $("#modalNovoSubitem [name = txtItemId").val();
 		subitem.item = item;
 		
-		var objSubitem = new Subitem();
-		var objJson = objSubitem.salvar(subitem);
+		var requisicao = {operacao : "SALVAR"};
+		var objJson = requisicaoAjax(subitem, requisicao, "Subitem");
 		
 		if(objJson.semafaro == "VERDE"){
 			alert("Subitem salvo com sucesso!");
@@ -529,34 +544,4 @@ $(document).ready(function() {
 			"width":"110px"
 		});
 	
-	function requicaoAjax(entidade, operacao, servlet){
-		
-		var entidadeJson = JSON.stringify(entidade);
-	
-		// requisição AJAX
-		$.ajax(
-				{
-					url : servlet,
-					type : 'post',
-					dataType : 'json',
-					data : {
-						operacao : operacao,
-						entidade : entidadeJson
-	
-					},
-	
-					beforeSend : function() {
-						$("#sucesso").html(
-								"<p align='center'>Carregando...</p>");
-					}
-				}).done(
-				function(msg) {
-					}).fail(function(jqXHR, textStatus, msg) {
-			alert(msg + " Erro grave!!!");
-		});
-	}
-
-	
-	
-	
-});
+});// jquery

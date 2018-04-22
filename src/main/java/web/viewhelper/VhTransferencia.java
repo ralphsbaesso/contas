@@ -29,11 +29,13 @@ public class VhTransferencia extends AbstractVH {
 	@Override
 	public Entidade getEntidade(HttpServletRequest request) {
 
-		Gson gson = FactoryGson.getGson();
-
 		this.transferencia = new Transferencia();
+		Gson gson = FactoryGson.getGson();
+		
+		String jsonRequisicao = request.getParameter("requisicao");
+		requisicao = gson.fromJson(jsonRequisicao, Requisicao.class);
 
-		String jsonTransferencia = request.getParameter("transferencia");
+		String jsonTransferencia = request.getParameter("entidade");
 		
 		if(jsonTransferencia != null) {
 			
@@ -45,13 +47,11 @@ public class VhTransferencia extends AbstractVH {
 			}
 		}
 
-		operacao = request.getParameter("operacao").toLowerCase();
+		if (requisicao.getOperacao().equals(EOperacao.SALVAR.getValor())) {
 
-		if (operacao.equals(EOperacao.SALVAR.getValor())) {
+		} else if (requisicao.getOperacao().equals(EOperacao.ALTERAR.getValor())) {
 
-		} else if (operacao.equals(EOperacao.ALTERAR.getValor())) {
-
-		} else if (operacao.equals(EOperacao.EXCLUIR.getValor())) {
+		} else if (requisicao.getOperacao().equals(EOperacao.EXCLUIR.getValor())) {
 
 		}
 
@@ -69,22 +69,22 @@ public class VhTransferencia extends AbstractVH {
 
 		transpotadorWeb.recebeObjetoMensagem(transportador);
 
-		if (operacao.equals("salvar")) {
+		if (requisicao.getOperacao().equals("salvar")) {
 
 			out.print(transpotadorWeb.enviarObjetoWeb());
 			return;
 
-		} else if (operacao.equals("excluir")) {
+		} else if (requisicao.getOperacao().equals("excluir")) {
 
 			out.print(transpotadorWeb.enviarObjetoWeb());
 			return;
 
-		} else if (operacao.equals("alterar")) {
+		} else if (requisicao.getOperacao().equals("alterar")) {
 
 			out.print(transpotadorWeb.enviarObjetoWeb());
 			return;
 
-		} else if (operacao.equals("listar")) {
+		} else if (requisicao.getOperacao().equals("listar")) {
 
 			List<Transferencia> transferencias = (List) transportador.getEntidades();
 

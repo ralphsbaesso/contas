@@ -27,8 +27,6 @@ public class SalvarListaTransferencia implements IStrategy {
 
 			Transferencia transferencia = listaTransferencia.getTransferencias().get(i);
 			
-			ControleConexao.entityManager.persist(transferencia);
-
 			Transacao tp = transferencia.getTransacoes().get(0);
 			Transacao ts = null;
 			
@@ -36,22 +34,30 @@ public class SalvarListaTransferencia implements IStrategy {
 				
 				ts = transferencia.getTransacoes().get(1);
 			}
-
-			try {
-				tp.setTransferencia(transferencia);
-				transferencia.getTransacoes().set(0, ControleConexao.entityManager.merge(tp));
-				
-				if(ts != null) {
-					ts.setTransferencia(transferencia);
-					transferencia.getTransacoes().set(1, ControleConexao.entityManager.merge(ts));
+			
+			if(transferencia.getId() > 0) {
+				transferencia = ControleConexao.entityManager.merge(transferencia);
+			}else {
+				ControleConexao.entityManager.persist(transferencia);				
+			}
+				try {
+					tp.setTransferencia(transferencia);
+					tp = ControleConexao.entityManager.merge(tp);
+					transferencia.getTransacoes().set(0, tp);
 					
+					if(ts != null) {
+						ts.setTransferencia(transferencia);
+						ts = ControleConexao.entityManager.merge(ts);
+						transferencia.getTransacoes().set(1, ts);
+						
+					}
+					
+				} catch (Exception e) {
+					
+					listaErros.add("Erro na linha " + (i + 1));
+					e.printStackTrace();
 				}
 
-			} catch (Exception e) {
-
-				listaErros.add("Erro na linha " + (i + 1));
-				e.printStackTrace();
-			}
 		}
 
 		if (listaErros.isEmpty()) {

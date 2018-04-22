@@ -31,7 +31,8 @@ public class VerificarContaSegundariaDaListaTransferencia implements IStrategy {
 					continue;
 				}
 				
-				if(contaSecundaria.getId() == Integer.MIN_VALUE) {
+				if(contaSecundaria.getId() == Integer.MIN_VALUE || contaSecundaria.getId() == 0) {
+					transferencia.getTransacoes().remove(1);
 					continue;
 				}
 				
@@ -50,6 +51,7 @@ public class VerificarContaSegundariaDaListaTransferencia implements IStrategy {
 					ts.setTitulo(tp.getTitulo());
 					ts.setValor(tp.getValor() * -1);
 					ts.setSubitem(tp.getSubitem());
+					ts.setQtdeItem(tp.getQtdeItem());
 				}
 			}
 		}

@@ -2,18 +2,16 @@ package web.viewhelper;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Calendar;
 import java.util.List;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
-import adaptergson.EmptyStringToDouble;
-import adaptergson.StringToCalendar;
+import adaptergson.FactoryGson;
 import controle.ITransportador;
 import dominio.Entidade;
 import dominio.Subitem;
@@ -27,15 +25,13 @@ public class VhSubitem extends AbstractVH {
 	@Override
 	public Entidade getEntidade(HttpServletRequest request) {
 
-		Gson gson = new GsonBuilder()
-				.registerTypeAdapter(Calendar.class, new StringToCalendar())
-				.registerTypeAdapter(double.class, new EmptyStringToDouble())
-				.registerTypeAdapter(Double.class, new EmptyStringToDouble())
-				.create();
-		
 		this.subitem = new Subitem();
+Gson gson = FactoryGson.getGson();
 		
-		String jsonSubitem = request.getParameter("subitem");
+		String jsonRequisicao = request.getParameter("requisicao");
+		requisicao = gson.fromJson(jsonRequisicao, Requisicao.class);
+
+		String jsonSubitem = request.getParameter("entidade");
 		
 		if(jsonSubitem != null) {
 			
@@ -47,14 +43,13 @@ public class VhSubitem extends AbstractVH {
 			}
 		}
 
-		operacao = request.getParameter("operacao").toLowerCase();
-
-		if (operacao.equals(EOperacao.SALVAR.getValor())) {
+		if (requisicao.getOperacao().equals(EOperacao.SALVAR)) {
 			
-		}else if( operacao.equals(EOperacao.ALTERAR.getValor())) {
+		}else if( requisicao.getOperacao().equals(EOperacao.ALTERAR)) {
 			
-		}else if(operacao.equals(EOperacao.EXCLUIR.getValor())) {
-		
+		}else if(requisicao.getOperacao().equals(EOperacao.EXCLUIR)) {
+			
+		}else if(requisicao.getOperacao().equals(EOperacao.LISTAR)) {
 			
 		}
 
@@ -68,37 +63,35 @@ public class VhSubitem extends AbstractVH {
 
 		PrintWriter out = response.getWriter();
 		TransportadorWeb transpotadorWeb = new TransportadorWeb();
+		Gson json = new Gson();
 
 		transpotadorWeb.recebeObjetoMensagem(transportador);
 
-		if (operacao.equals("salvar")) {
+		if (requisicao.getOperacao().equals(EOperacao.SALVAR)) {
 
-			out.print(transpotadorWeb.enviarObjetoWeb());
-			return;
-
-		} else if (operacao.equals("excluir")) {
-
-			out.print(transpotadorWeb.enviarObjetoWeb());
-			return;
+		} else if (requisicao.getOperacao().equals(EOperacao.ALTERAR)) {
 			
-		} else if (operacao.equals("alterar")) {
-
-			out.print(transpotadorWeb.enviarObjetoWeb());
-			return;
+		} else if (requisicao.getOperacao().equals(EOperacao.EXCLUIR)) {
 			
-		} else if (operacao.equals("listar")) {
+		} else if (requisicao.getOperacao().equals(EOperacao.LISTAR)) {
 			
-			List<Subitem> itens = (List) transpotadorWeb.getEntidades();
+			List<Subitem> subitens = (List) transpotadorWeb.getEntidades();
 			
-			for(Subitem subitem : itens) {
+			for(Subitem subitem : subitens) {
 				subitem.getItem().setCorrentista(null);
+				subitem.getItem().setSubitens(null);
 			}
-
-			out.print(transpotadorWeb.enviarObjetoWeb());
+		}
+		
+		if(this.requisicao.getDestino() != null) {
+			
+			request.setAttribute("contas",json.toJson(transportador.getEntidades()));
+			RequestDispatcher rd = request.getRequestDispatcher(this.requisicao.getDestino());
+			rd.forward(request, response);
 			return;
 		}
+		
+		out.print(transpotadorWeb.enviarObjetoWeb());
 
-		out.println("operacao: " + operacao);
-		// rd.forward(request, response);
 	}
 }

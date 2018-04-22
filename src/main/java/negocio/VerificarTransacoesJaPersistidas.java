@@ -1,76 +1,101 @@
 package negocio;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+
 import controle.ITransportador;
+import dao.Idao;
+import dao.implementacao.DaoTransacao;
 import dominio.ListaTransferencia;
 import dominio.Transacao;
+import dominio.Transferencia;
 import enuns.ESemafaro;
 
 public class VerificarTransacoesJaPersistidas implements IStrategy {
 
 	@Override
 	public boolean processar(ITransportador transportador) {
-		
-		if(transportador.getEntidade() instanceof ListaTransferencia) {
+
+		if (transportador.getEntidade() instanceof ListaTransferencia) {
+
+			ListaTransferencia listaTransferencia = (ListaTransferencia) transportador.getEntidade();
 			
-			ListaTransferencia listaTransferencia =  (ListaTransferencia) transportador.getEntidade();	
+//			//verifica se existe arquivo anexo
+//			if(listaTransferencia.getCaminhoArquivo() == null || listaTransferencia.getCaminhoArquivo().isEmpty()) {
+//				//vazio, para somente este processo.
+//				return true;
+//			}
+
+			Calendar maiorData = Calendar.getInstance();
+			Calendar menorData = Calendar.getInstance();
+
+			maiorData.set(1990, 0, 0);
+			menorData.set(3000, 0, 0);
+
+			// pegar a maior e menor data da lista
+			for (Transferencia transferencia : listaTransferencia.getTransferencias()) {
+
+				Calendar dataAtual = transferencia.getTransacoes().get(0).getDataTransacao();
+
+				if (dataAtual.getTimeInMillis() > maiorData.getTimeInMillis()) {
+					maiorData = (Calendar) dataAtual.clone();
+				}
+
+				if (dataAtual.getTimeInMillis() < menorData.getTimeInMillis()) {
+					menorData = (Calendar) dataAtual.clone();
+				}
+
+			}
+
+			Transacao transacao = new Transacao();
+
+			transacao.getFiltros().put("maiorData", maiorData);
+			transacao.getFiltros().put("menorData", menorData);
+
+			Idao dao = new DaoTransacao();
+
+			List<Transacao> transDB = dao.listar(transacao);
 			
-			for (int i = 0; i < listaTransferencia.getTransferencias().size(); i++) {
-				
-				String mensagem = "";
-				
-				Transacao transacao = listaTransferencia.getTransferencias().get(i).getTransacoes().get(0);
-				
-				int contaSegundariaId;
-				
-				if(listaTransferencia.getTransferencias().get(i).getTransacoes().size() > 1 && listaTransferencia.getTransferencias().get(i).getTransacoes().get(1) != null) {
+			List<Transferencia> removesT = new ArrayList();
+
+			for (Transferencia transferencia : listaTransferencia.getTransferencias()) {
+
+				Transacao t = transferencia.getTransacoes().get(0);
+
+				for (Transacao tDB : transDB) {
 					
-					try {
-						contaSegundariaId = listaTransferencia.getTransferencias().get(i).getTransacoes().get(1).getConta().getId();
-					}catch(NullPointerException e) {
-						contaSegundariaId = Integer.MIN_VALUE;
+					//verifica o docto(número do doc ou ted)
+					if(t.getDocto().equals(tDB.getDocto())) {
+						removesT.add(transferencia);
+						continue;
 					}
-				}else {
-					contaSegundariaId = Integer.MIN_VALUE;
+
+					// verificar data
+					if (t.getDataTransacao().equals(tDB.getDataTransacao())) {
+
+						// verificar valor
+						if(Double.compare(t.getValor(), tDB.getValor()) == 0) {
+								
+							//verificar descrição
+							if(t.getDescricao().trim().equals(tDB.getDescricao().trim())) {
+								
+								// transação repetida, adicionar a lista de remoção.
+								removesT.add(transferencia);
+							}
+						}
+					}
 				}
-				
-				if(transacao.getDataTransacao() == null) {
-					mensagem += "Data no formato errado; ";
-				}
-				
-				if(transacao.getValor() == Double.MIN_VALUE) {
-					mensagem += "Valor no formato errado; ";
-				}
-				
-				if(transacao.getConta().getId() == Integer.MIN_VALUE) {
-					mensagem += "Não foi selecionado a Conta; "; 
-				}
-				
-				if(transacao.getSubitem().getId() == Integer.MIN_VALUE) {
-					mensagem += "Não foi selecionado o item ou/e subitem; "; 
-				}else if(transacao.getSubitem().getId() == 0) {
-					transacao.setSubitem(null);
-				}
-				
-				// se conta principal igual a conta segundário
-				if(transacao.getConta().getId() == contaSegundariaId) {
-					mensagem += "Não é possivel fazer tranferencia para a mesma conta; ";
-				}
-				
-				if(transacao.getQtdeItem() == Integer.MIN_VALUE) {
-					transacao.setQtdeItem(0);
-				}else if(transacao.getQtdeItem() < 0) {
-					mensagem += "Não pode colocar valor negativo na quantidade de item!;";
-				}
+			}
 			
-				if(mensagem != "") {
-					mensagem = "Erro na transação da linha " + (i + 1) + ": " + mensagem;
-					transportador.setMensagens(mensagem);
-					transportador.setSemafaro(ESemafaro.AMARELO);
-				}
+			listaTransferencia.getTransferencias().removeAll(removesT);
 			
+			if(listaTransferencia.getTransferencias().isEmpty()) {
+				transportador.setMensagens("Transações repetidas, não seão salvas");
+				return transportador.setSemafaro(ESemafaro.VERMELHO);
 			}
 		}
-		
+
 		return true;
 	}
 

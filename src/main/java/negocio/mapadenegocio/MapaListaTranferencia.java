@@ -4,21 +4,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 import negocio.IStrategy;
+import negocio.LeitorArquivo;
 import negocio.RegraAlterarEntidade;
 import negocio.RegraExcluirEntidade;
 import negocio.RegraListarEntidade;
-import negocio.RegraSalvarEntidade;
 import negocio.SalvarListaTransferencia;
 import negocio.VerificarCamposTransacoes;
 import negocio.VerificarContaSegundariaDaListaTransferencia;
+import negocio.VerificarTransacoesJaPersistidas;
 
 public class MapaListaTranferencia extends AbstractMapaNegocio{
 
 	@Override
 	public List<IStrategy> estrategiasSalvar() {
 		this.estrategias = new ArrayList();
+		this.estrategias.add(new LeitorArquivo());
 		this.estrategias.add(new VerificarContaSegundariaDaListaTransferencia());
 		this.estrategias.add(new VerificarCamposTransacoes());
+		this.estrategias.add(new VerificarTransacoesJaPersistidas());
 		this.estrategias.add(new SalvarListaTransferencia());
 		
 		return this.estrategias;

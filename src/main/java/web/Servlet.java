@@ -5,10 +5,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.gson.Gson;
+
+import adaptergson.FactoryGson;
 import conexao.ControleConexao;
 import controle.Fachada;
 import controle.IFachada;
@@ -20,6 +24,7 @@ import web.command.CommandListar;
 import web.command.CommandSalvar;
 import web.command.ICommand;
 import web.viewhelper.IViewHelper;
+import web.viewhelper.Requisicao;
 import web.viewhelper.VhConta;
 import web.viewhelper.VhItem;
 import web.viewhelper.VhListaTransferencia;
@@ -27,13 +32,14 @@ import web.viewhelper.VhSubitem;
 import web.viewhelper.VhTransacao;
 import web.viewhelper.VhTransferencia;
 
-
+@MultipartConfig
 public class Servlet extends HttpServlet {
 	
 	// atributos
 	private Map<String, ICommand> commands;
 	private Map<String, IViewHelper> vhs;
 	private ITransportador mensagem;
+	private Requisicao requisicao = new Requisicao();
 	
 	// construtor
 	public Servlet(){
@@ -61,8 +67,9 @@ public class Servlet extends HttpServlet {
 
 	public void service(HttpServletRequest request,
 			HttpServletResponse response)
-			throws ServletException, IOException {
+			throws ServletException, IOException {// request.getPart("file")
 		
+		Gson gson = FactoryGson.getGson();//request.getParameter("txtArquivo")
 		
 		// Obt?m a uri que invocou esta servlet (O que foi definido no methdo do form html)
 		String uri = request.getRequestURI();
@@ -74,11 +81,10 @@ public class Servlet extends HttpServlet {
 		// esta servlet
 		Entidade entidade = vh.getEntidade(request);
 		
-		String operacao = request.getParameter("operacao").toLowerCase();
+		String jsonRequisicao = request.getParameter("requisicao");
+		requisicao = gson.fromJson(jsonRequisicao, Requisicao.class);
 		
-		IFachada fachada = new Fachada();
-		
-		ICommand cmd = commands.get(operacao);
+		ICommand cmd = commands.get(requisicao.getOperacao().getValor());
 		if(cmd != null){
 			this.mensagem = cmd.executar(entidade);
 		}else{

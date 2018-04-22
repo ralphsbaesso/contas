@@ -17,22 +17,20 @@
             <div class="card-body">
               <h4>Transações</h4>
               <h6 class="text-muted">Subtitle</h6>
-              	<form action="Conta" method="post">
-                	<label class=""><strong>Selecione a conta</strong></label>
-                	<select class="btn btn-info selectContaPrimaria" id="" name="txtContaId">
-                  </select> 
-                  <button class="btn btn-outline-primary" id="operacao" name="operacao" value="listar" value="segundo">Novas Transações</button>
-                  <input type="hidden" name="destino" value="menu-conta.jsp">
-                </form>
-                
-                <form action="Transacao" method="post">
-                	<label class=""><strong>Selecione a conta</strong></label>
-                	<select class="btn btn-info selectContaPrimaria" id="selectContaPrimaria" name="txtContaId">
-                  </select> 
-                  <button class="btn btn-outline-primary" id="operacao" name="operacao" value="listar">Listar Transações</button>
-                  <input type="hidden" name="destino" value="menu-conta.jsp">
-                </form>
-                  
+              
+               <label class=""><strong>Selecione a conta</strong></label>
+               <select class="btn btn-info" id="selectContaPrimaria" name="txtContaId">
+               </select> 
+               <button class="btn btn-outline-primary" id="operacao" name="operacao" value="novasTransacoes" value="segundo">Novas Transações</button>
+               <button class="btn btn-outline-primary" id="operacao" name="operacao" value="listarTransacoes">Listar Transações</button>
+               <button class="btn btn-outline-primary" id="operacao" name="operacao" value="salvarArquivo">Carregar Arquivo</button>
+               
+               <form action="ListaTransferencia" method="post" enctype="multipart/form-data">
+               	<input id="file" class="btn btn-outline-primary" name="txtArquivo" type="file"/>
+               	<input type="submit" value="enviar"/>
+               	<input type="text" name="teste"/>
+               </form>
+               
             </div>
           </div>
         </div>
@@ -45,11 +43,7 @@
   <script src="js/cdnjs.cloudflare.com-ajax-libs-jquery.mask-1.14.13-jquery.mask.min.js"></script>
   <script src="js/componentes.js"></script>
   <script src="js/util.js"></script>
-  <script src="js/ListaTransferencia.js"></script>
-  <script src="js/Transferencia.js"></script>
-  <script src="js/Conta.js"></script>
-  <script src="js/Item.js"></script>
-  <script src="js/Subitem.js"></script>
+  <script src="js/requisicao.js"></script>
   <script src="js/menu-principal.js"></script>
 </body>
 

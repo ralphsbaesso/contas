@@ -10,7 +10,6 @@ import dao.Idao;
 import dominio.Conta;
 import dominio.Entidade;
 import dominio.Transacao;
-import dominio.Transferencia;
 
 public class DaoTransacao implements Idao {
 
@@ -76,12 +75,20 @@ public class DaoTransacao implements Idao {
 			transacao = ControleConexao.entityManager.find(Transacao.class, transacao.getId());
 			transacoes.add(transacao);
 			
-		}else if(conta != null){
+		}else if(conta != null && conta.getId() > 0){
+			
+			StringBuilder sbQuery = new StringBuilder();
+			sbQuery.append("SELECT t FROM Transacao t ")
+					.append("LEFT JOIN FETCH t.transferencia ")
+					.append("LEFT JOIN FETCH t.subitem ")
+					.append("JOIN t.conta conta ")
+					.append("where conta.id = :id ")
+					.append("ORDER BY t.dataTransacao, t.dataCadastro");
 			
 			// Conta Primaria
 			TypedQuery<Transacao> query = ControleConexao.entityManager
 												.createQuery
-												("SELECT t FROM Transacao t LEFT JOIN FETCH t.transferencia JOIN t.conta conta where conta.id = :id ORDER BY t.dataTransacao, t.dataCadastro",
+												(sbQuery.toString(),
 												Transacao.class);
 			
 			transacoes.addAll(query.setParameter("id", conta.getId()).getResultList());
@@ -89,6 +96,17 @@ public class DaoTransacao implements Idao {
 			for(Transacao trans : transacoes) {
 				trans.getTransferencia().getTransacoes().size();
 			}
+		}else if(!transacao.getFiltros().isEmpty()) {
+			
+			// filtro por data
+			TypedQuery<Transacao> query = ControleConexao.entityManager.createQuery(
+					"SELECT t FROM Transacao t where t.dataTransacao BETWEEN :dataInicial AND :dataFinal",
+					Transacao.class);
+
+			transacoes.addAll(query
+								.setParameter("dataInicial", transacao.getFiltros().get("menorData"))
+								.setParameter("dataFinal", transacao.getFiltros().get("maiorData"))
+								.getResultList());
 		}
 
 		return transacoes;
